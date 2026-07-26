@@ -9,6 +9,7 @@ import {
   Folder,
   Users,
   Settings,
+  FileUser,
 } from "lucide-react";
 import { NavItem } from "@/interfaces/nav-item";
 import {
@@ -32,6 +33,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   User,
   Folder,
   Users,
+  FileUser,
   Settings,
 };
 
