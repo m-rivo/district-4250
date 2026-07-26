@@ -5,17 +5,24 @@ import { Member } from "@/interfaces/member";
 
 export default async function Members() {
   const t = await getTranslations("Members");
-  const pb = await createServerClient();
 
-  const records = await pb.collection("members").getFullList({
-    sort: "first_name",
-  });
+  let members: Member[] = [];
 
-  const members: Member[] = records.map((record) => ({
-    id: record.id,
-    first_name: record.first_name,
-    first_surname: record.first_surname,
-  }));
+  try {
+    const pb = await createServerClient();
+
+    const records = await pb.collection("members").getFullList({
+      sort: "first_name",
+    });
+
+    members = records.map((record) => ({
+      id: record.id,
+      first_name: record.first_name,
+      first_surname: record.first_surname,
+    }));
+  } catch (error) {
+    console.error(error);
+  }
 
   return (
     <Card>

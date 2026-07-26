@@ -3,18 +3,24 @@ import { AppSidebarUI } from "./ui";
 import { NavItem } from "@/interfaces/nav-item";
 
 export async function AppSidebar() {
-  const pb = await createServerClient();
+  let navItems: NavItem[] = [];
 
-  const records = await pb.collection("navigation_routes").getFullList({
-    sort: "-created",
-  });
+  try {
+    const pb = await createServerClient();
 
-  const navItems: NavItem[] = records.map((record) => ({
-    id: record.id,
-    name: record.name,
-    relative_route: record.relative_route,
-    lucide_icon: record.lucide_icon,
-  }));
+    const records = await pb.collection("navigation_routes").getFullList({
+      sort: "order",
+    });
+
+    navItems = records.map((record) => ({
+      id: record.id,
+      name: record.name,
+      relative_route: record.relative_route,
+      lucide_icon: record.lucide_icon,
+    }));
+  } catch (error) {
+    console.error(error);
+  }
 
   return <AppSidebarUI navItems={navItems} />;
 }
