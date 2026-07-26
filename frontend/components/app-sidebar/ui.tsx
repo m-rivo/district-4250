@@ -1,9 +1,16 @@
 "use client";
 
-import { LayoutDashboard, User, LogOut, Settings, Folder } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, Link } from "@/i18n/routing";
-
+import {
+  LogOut,
+  LayoutDashboard,
+  User,
+  Folder,
+  Users,
+  Settings,
+} from "lucide-react";
+import { NavItem } from "@/interfaces/nav-item";
 import {
   Sidebar,
   SidebarContent,
@@ -18,39 +25,22 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeModeToggle } from "@/components/theme-mode-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
-import { Button } from "@/components/ui/button";
+//import { logoutAction } from "@/actions/auth";
 
-export function AppSidebar() {
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  LayoutDashboard,
+  User,
+  Folder,
+  Users,
+  Settings,
+};
+
+export function AppSidebarUI({ navItems }: { navItems: NavItem[] }) {
   const t = useTranslations("Navigation");
   const pathname = usePathname();
 
-  // Lista de enlaces principales
-  const navItems = [
-    {
-      title: t("dashboard"),
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: t("profile"),
-      url: "/profile",
-      icon: User,
-    },
-    {
-      title: t("projects"),
-      url: "/projects",
-      icon: Folder,
-    },
-  ];
-
-  const handleLogout = () => {
-    // Aquí agregas la lógica para cerrar sesión (ej. supabase.auth.signOut(), next-auth, etc.)
-    console.log("Logging out...");
-  };
-
   return (
     <Sidebar variant="floating" collapsible="icon">
-      {/* Header del Sidebar */}
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2 font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
@@ -62,20 +52,26 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      {/* Contenido / Menú Principal */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>{t("menu")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
-                const isActive = pathname === item.url;
+                const isActive = pathname === item.relative_route;
+                const IconComponent = item.lucide_icon
+                  ? ICON_MAP[item.lucide_icon] || LayoutDashboard
+                  : LayoutDashboard;
+
                 return (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton isActive={isActive} tooltip={item.title}>
-                      <Link href={item.url} className="flex gap-2 items-center">
-                        <item.icon />
-                        <span>{item.title}</span>
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      isActive={isActive}
+                      tooltip={t(item.name)}
+                    >
+                      <Link href={item.relative_route}>
+                        <IconComponent className="h-4 w-4" />
+                        <span>{t(item.name)}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -86,19 +82,16 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer del Sidebar: Toggles y Logout */}
       <SidebarFooter className="p-3 space-y-2 border-t">
-        {/* Controles de Idioma y Tema */}
         <div className="flex items-center justify-between group-data-[collapsible=icon]:flex-col gap-2">
           <ThemeModeToggle />
           <LanguageToggle />
         </div>
 
-        {/* Botón de Logout */}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={handleLogout}
+              /* onClick={() => logoutAction()} */
               className="text-destructive hover:bg-destructive/10 hover:text-destructive"
               tooltip={t("logout")}
             >

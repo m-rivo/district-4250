@@ -13,6 +13,7 @@
     "dashboard": "Dashboard",
     "profile": "My Profile",
     "projects": "Projects",
+    "members": "Members",
     "logout": "Log Out"
   }
 }
