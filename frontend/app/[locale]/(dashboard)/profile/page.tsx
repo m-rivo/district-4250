@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
 
 export default async function Profile() {
-  const t = await getTranslations("Perfil");
+  const t = await getTranslations("Profile");
 
   return (
     <Card>

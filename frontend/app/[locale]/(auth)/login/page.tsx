@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
 
-export default async function Dashboard() {
-  const t = await getTranslations("Index");
+export default async function Login() {
+  const t = await getTranslations("Login");
 
   return (
     <Card>
