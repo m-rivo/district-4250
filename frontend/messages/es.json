@@ -1,0 +1,11 @@
+{
+  "Index": {
+    "title": "Bienvenido a la app web del Distrito 4250",
+    "description": "Creado por Marycarmen Rivera"
+  },
+  "Theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  }
+}

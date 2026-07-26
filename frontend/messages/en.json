@@ -1,0 +1,11 @@
+{
+  "Index": {
+    "title": "Welcome to Distric 4250 web app",
+    "description": "Created by Marycarmen Rivera"
+  },
+  "Theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}
