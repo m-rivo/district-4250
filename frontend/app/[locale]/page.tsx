@@ -1,19 +1,14 @@
-import { Card } from "@/components/ui/card";
-import { ThemeModeToggle } from "@/components/theme-mode-toggle";
-import { getTranslations } from "next-intl/server";
-import { LanguageToggle } from "@/components/language-toggle";
+// app/[locale]/page.tsx
+import { redirect } from "@/i18n/routing";
 
-export default async function Home() {
-  const t = await getTranslations("Index");
+export default async function IndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
 
-  return (
-    <main className="p-8">
-      <Card>
-        <ThemeModeToggle />
-        <LanguageToggle />
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-gray-500">{t("description")}</p>
-      </Card>
-    </main>
-  );
+  // Si no está autenticado -> a /login
+  // Si está autenticado -> a /dashboard
+  redirect({ href: "/login", locale });
 }

@@ -7,5 +7,12 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "Navigation": {
+    "menu": "Main Menu",
+    "dashboard": "Dashboard",
+    "profile": "My Profile",
+    "projects": "Projects",
+    "logout": "Log Out"
   }
 }

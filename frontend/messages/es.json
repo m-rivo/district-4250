@@ -7,5 +7,12 @@
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema"
+  },
+  "Navigation": {
+    "menu": "Menú Principal",
+    "dashboard": "Dashboard",
+    "profile": "Mi Perfil",
+    "projects": "Proyectos",
+    "logout": "Cerrar Sesión"
   }
 }
