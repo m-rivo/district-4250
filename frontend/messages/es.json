@@ -16,5 +16,11 @@
     "members": "Socios",
     "clubs": "Clubs",
     "logout": "Cerrar Sesión"
+  },
+  "Profile": {
+    "profile": "Perfil",
+    "birth_date": "Cumpleaños",
+    "age": "Edad",
+    "not_found": "No se encontró el socio con el ID \"{id}\"."
   }
 }

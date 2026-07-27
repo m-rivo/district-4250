@@ -16,5 +16,11 @@
     "members": "Members",
     "clubs": "Clubs",
     "logout": "Log Out"
+  },
+  "Profile": {
+    "profile": "Profile",
+    "birth_date": "Birth date",
+    "age": "Age",
+    "not_found": "Member with ID \"{id}\" was not found."
   }
 }
