@@ -22,5 +22,8 @@
     "birth_date": "Birth date",
     "age": "Age",
     "not_found": "Member with ID \"{id}\" was not found."
+  },
+  "Members": {
+    "members": "Members"
   }
 }

@@ -71,7 +71,7 @@ export function AppSidebarUI({ navItems }: { navItems: NavItem[] }) {
                       isActive={isActive}
                       tooltip={t(item.name)}
                     >
-                      <Link href={item.relative_route}>
+                      <Link href={"/" + item.relative_route}>
                         <IconComponent className="h-4 w-4" />
                         <span>{t(item.name)}</span>
                       </Link>

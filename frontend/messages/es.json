@@ -22,5 +22,8 @@
     "birth_date": "Cumpleaños",
     "age": "Edad",
     "not_found": "No se encontró el socio con el ID \"{id}\"."
+  },
+  "Members": {
+    "members": "Socios"
   }
 }
