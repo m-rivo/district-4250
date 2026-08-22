@@ -3,6 +3,7 @@
 import { createServerClient } from "@/lib/pocketbase/server";
 import { redirect } from "@/i18n/routing";
 import { getLocale } from "next-intl/server";
+import { cookies } from "next/headers";
 
 export async function signupAction(formData: FormData) {
   const email = formData.get("email") as string;
@@ -39,9 +40,19 @@ export async function loginAction(formData: FormData) {
 
   try {
     await pb.collection("users").authWithPassword(email, password);
+
+    const cookieStore = await cookies();
+    cookieStore.set(
+      "pb_auth",
+      pb.authStore.exportToCookie({ httpOnly: false }),
+      {
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      },
+    );
   } catch (error: any) {
     console.error("Error al iniciar sesión:", error?.response || error);
-    // Aquí puedes retornar un objeto de error para mostrarlo en UI si usas useActionState
     throw new Error("No se pudo iniciar sesión.");
   }
 
