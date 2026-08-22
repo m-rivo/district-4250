@@ -11,5 +11,18 @@ export async function createServerClient() {
     pb.authStore.loadFromCookie(`pb_auth=${authCookie.value}`);
   }
 
+  // Escucha los cambios de autenticación para sincronizar la cookie con Next.js
+  pb.authStore.onChange(() => {
+    cookieStore.set(
+      "pb_auth",
+      pb.authStore.exportToCookie({ httpOnly: false }),
+      {
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      },
+    );
+  });
+
   return pb;
 }

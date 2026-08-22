@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeModeToggle } from "@/components/theme-mode-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
-//import { logoutAction } from "@/actions/auth";
+import { logoutAction } from "@/app/actions/auth";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   LayoutDashboard,
@@ -93,7 +93,7 @@ export function AppSidebarUI({ navItems }: { navItems: NavItem[] }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              /* onClick={() => logoutAction()} */
+              onClick={() => logoutAction()}
               className="text-destructive hover:bg-destructive/10 hover:text-destructive"
               tooltip={t("logout")}
             >
