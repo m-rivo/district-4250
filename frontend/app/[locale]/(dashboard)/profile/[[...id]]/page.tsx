@@ -7,17 +7,25 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { calculateAge, formatDate } from "@/lib/utils/date";
 import { CakeIcon } from "lucide-react";
+import { AuthRecord } from "pocketbase";
 
 export default async function Profile({ params }: ProfilePageProps) {
-  const { id, locale } = await params;
+  const { id: rawParamId, locale } = await params;
   const t = await getTranslations("Profile");
+
+  const paramId = Array.isArray(rawParamId) ? rawParamId[0] : rawParamId;
+  const pb = await createServerClient();
+  const authUser: AuthRecord = pb.authStore.record;
+  const targetId = paramId || authUser?.member;
+
+  if (!targetId) {
+    return <p>NO ID FOUND</p>;
+  }
 
   let member: Member | null = null;
 
   try {
-    const pb = await createServerClient();
-
-    const record = await pb.collection("members").getOne(id, {
+    const record = await pb.collection("members").getOne(targetId, {
       expand: "club,roles",
     });
 
@@ -38,11 +46,10 @@ export default async function Profile({ params }: ProfilePageProps) {
   }
 
   if (!member) {
-    return <p>{t("not_found", { id })}</p>;
+    return <p>NO MEMBER FOUND</p>;
   }
 
   const formattedBirthDate = formatDate(member.birth_date, locale);
-
   const age = calculateAge(member.birth_date);
 
   return (
