@@ -8,6 +8,7 @@ import { calculateAge, formatDate } from "@/lib/utils/date";
 import { CakeIcon } from "lucide-react";
 import { AuthRecord } from "pocketbase";
 import { ProfilePageProps } from "@/interfaces/profile-page-props";
+import { EditProfileDialog } from "@/components/edit-profile-dialog";
 
 export default async function Profile({ params }: ProfilePageProps) {
   const { locale } = await params;
@@ -79,6 +80,7 @@ export default async function Profile({ params }: ProfilePageProps) {
       <p>
         {t("age")}: {age}
       </p>
+      <EditProfileDialog member={member} />
     </Card>
   );
 }
