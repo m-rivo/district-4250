@@ -9,6 +9,7 @@ import { CakeIcon } from "lucide-react";
 import { AuthRecord } from "pocketbase";
 import { ProfilePageProps } from "@/interfaces/profile-page-props";
 import { EditProfileDialog } from "@/components/edit-profile-dialog";
+import { EditProfileImageDialog } from "@/components/edit-profile-image-dialog";
 
 export default async function Profile({ params }: ProfilePageProps) {
   const { locale } = await params;
@@ -23,6 +24,7 @@ export default async function Profile({ params }: ProfilePageProps) {
   }
 
   let member: Member | null = null;
+  let profilePictureUrl: string | undefined;
 
   try {
     const record = await pb.collection("members").getOne(memberId, {
@@ -41,6 +43,10 @@ export default async function Profile({ params }: ProfilePageProps) {
       birth_date: record.birth_date,
       profile_picture: record.profile_picture,
     };
+
+    profilePictureUrl = record.profile_picture
+      ? pb.files.getURL(record, record.profile_picture)
+      : undefined;
   } catch (error) {
     console.error(error);
   }
@@ -55,14 +61,20 @@ export default async function Profile({ params }: ProfilePageProps) {
   return (
     <Card>
       <h1 className="text-2xl font-bold">{t("profile")}</h1>
-      <Avatar size="lg">
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>
-          {(
-            member.first_name.charAt(0) + member.first_surname.charAt(0)
-          ).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+      <div>
+        <Avatar size="lg">
+          <AvatarImage src={profilePictureUrl} />
+          <AvatarFallback>
+            {(
+              member.first_name.charAt(0) + member.first_surname.charAt(0)
+            ).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <EditProfileImageDialog
+          memberId={member.id}
+          currentImage={profilePictureUrl}
+        />
+      </div>
       <h2 className="text-xl font-bold">
         {member.first_name + " " + member.first_surname}
       </h2>

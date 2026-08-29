@@ -38,3 +38,39 @@ export async function updateMemberAction(
     };
   }
 }
+
+export async function updateMemberProfilePictureAction(
+  memberId: string,
+  formData: FormData,
+): Promise<ActionState> {
+  const pb = await createServerClient();
+
+  const file = formData.get("profile_picture");
+
+  if (!(file instanceof File)) {
+    return {
+      success: false,
+      error: "No se recibió ninguna imagen.",
+    };
+  }
+
+  try {
+    await pb.collection("members").update(memberId, {
+      profile_picture: file,
+    });
+
+    revalidatePath(`/members/${memberId}`);
+    revalidatePath("/members");
+
+    return {
+      success: true,
+    };
+  } catch (error: any) {
+    console.error("Error al actualizar la foto de perfil:", error);
+
+    return {
+      success: false,
+      error: error?.message || "No se pudo actualizar la foto de perfil.",
+    };
+  }
+}
