@@ -5,6 +5,11 @@ import { redirect } from "@/i18n/routing";
 import { getLocale } from "next-intl/server";
 import { cookies } from "next/headers";
 
+export type LoginState = {
+  error?: string;
+  errorId?: number;
+};
+
 export async function signupAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -30,7 +35,10 @@ export async function signupAction(formData: FormData) {
   redirect({ href: "/login", locale });
 }
 
-export async function loginAction(formData: FormData) {
+export async function loginAction(
+  _prevState: LoginState,
+  formData: FormData,
+): Promise<LoginState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -42,6 +50,7 @@ export async function loginAction(formData: FormData) {
     await pb.collection("users").authWithPassword(email, password);
 
     const cookieStore = await cookies();
+
     cookieStore.set(
       "pb_auth",
       pb.authStore.exportToCookie({ httpOnly: false }),
@@ -53,10 +62,19 @@ export async function loginAction(formData: FormData) {
     );
   } catch (error: any) {
     console.error("Error al iniciar sesión:", error?.response || error);
-    throw new Error("No se pudo iniciar sesión.");
+
+    return {
+      error: error?.response?.message || "No se pudo iniciar sesión.",
+      errorId: Date.now(),
+    };
   }
 
-  redirect({ href: "/dashboard", locale });
+  redirect({
+    href: "/dashboard",
+    locale,
+  });
+
+  return {};
 }
 
 export async function logoutAction() {
