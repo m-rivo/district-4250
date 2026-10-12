@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import ParaglideLocaleSwitcher from './LocaleSwitcher.tsx'
 import ThemeToggle from './ThemeToggle'
+import { m } from '#/paraglide/messages.js'
 
 export default function Header() {
   return (
@@ -22,14 +23,14 @@ export default function Header() {
             className="nav-link"
             activeProps={{ className: 'nav-link is-active' }}
           >
-            Home
+            {m.home_page()}
           </Link>
           <Link
             to="/about"
             className="nav-link"
             activeProps={{ className: 'nav-link is-active' }}
           >
-            About
+            {m.about_page()}
           </Link>
           <a
             href="https://tanstack.com/start/latest/docs/framework/react/overview"
