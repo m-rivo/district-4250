@@ -1,9 +1,100 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Button } from '#/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '#/components/ui/field'
+import { Input } from '#/components/ui/input'
+import { Spinner } from '#/components/ui/spinner'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import { login } from '#/features/auth/auth.functions'
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,
 })
 
 function LoginPage() {
-  return <h1>Login</h1>
+  const navigate = useNavigate()
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasError, setHasError] = useState(false)
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setHasError(false)
+
+    try {
+      setIsLoading(true)
+      const result = await login({ data: { email, password } })
+      console.log(result)
+      await navigate({ to: '/' })
+    } catch (error: any) {
+      console.error('Error al iniciar sesión:', error?.response || error)
+      setHasError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle className="text-center">Login to your account</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="w-full max-w-sm">
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="form-email">Email</FieldLabel>
+
+              <Input
+                id="form-email"
+                name="email"
+                type="email"
+                placeholder="john@example.com"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                aria-invalid={hasError}
+                required
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="form-password">Password</FieldLabel>
+
+              <Input
+                id="form-password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                aria-invalid={hasError}
+                required
+              />
+            </Field>
+          </FieldGroup>
+
+          <Button className="mt-6 w-full" type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Spinner data-icon="inline-start" />
+                Logging in
+              </>
+            ) : (
+              'Login'
+            )}
+          </Button>
+
+          <Button className="mt-2 w-full" variant="link" type="button">
+            <Link to="/signup">Don&apos;t have an account? Sign up</Link>
+          </Button>
+
+          <Button className="mt-2 w-full" variant="link" type="button">
+            <Link to="/signup">Forgot password?</Link>
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  )
 }

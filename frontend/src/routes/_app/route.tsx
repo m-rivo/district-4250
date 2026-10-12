@@ -1,8 +1,18 @@
 import Footer from '#/components/Footer'
 import Header from '#/components/Header'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { getCurrentUser } from '#/features/auth/auth.functions'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_app')({
+  beforeLoad: async () => {
+    const user = await getCurrentUser()
+
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+
+    return { user }
+  },
   component: AppLayout,
 })
 
