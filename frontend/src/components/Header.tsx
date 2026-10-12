@@ -26,7 +26,7 @@ export default function Header() {
             {m.home_page()}
           </Link>
           <Link
-            to="/about"
+            to="/members"
             className="nav-link"
             activeProps={{ className: 'nav-link is-active' }}
           >
