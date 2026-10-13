@@ -112,3 +112,21 @@ export const logout = createServerFn({ method: 'POST' }).handler(async () => {
   clearAuthCookie()
   return { success: true }
 })
+
+export const sendResetEmail = createServerFn({ method: 'POST' })
+  .validator((data: { email: string }) => {
+    const email = data.email.trim().toLowerCase()
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error('Enter a valid email.')
+    }
+
+    return { email }
+  })
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+
+    await pb.collection('users').requestPasswordReset(data.email)
+
+    return { success: true }
+  })

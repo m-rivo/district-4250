@@ -13,6 +13,7 @@ import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppMembersRouteImport } from './routes/_app/members'
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
@@ -35,6 +36,11 @@ const AppMembersRoute = AppMembersRouteImport.update({
   id: '/members',
   path: '/members',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
@@ -60,6 +66,7 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/members': typeof AppMembersRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/demo/table': typeof DemoTableRoute
@@ -68,6 +75,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/members': typeof AppMembersRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/demo/table': typeof DemoTableRoute
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_app/members': typeof AppMembersRoute
+  '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/demo/table': typeof DemoTableRoute
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/members'
+    | '/forgot-password'
     | '/login'
     | '/signup'
     | '/demo/table'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/members'
+    | '/forgot-password'
     | '/login'
     | '/signup'
     | '/demo/table'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/_auth'
     | '/_app/members'
+    | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/signup'
     | '/demo/table'
@@ -149,6 +161,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/members'
       preLoaderRoute: typeof AppMembersRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/_auth/forgot-password': {
+      id: '/_auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_auth/login': {
       id: '/_auth/login'
@@ -196,11 +215,13 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 )
 
 interface AuthRouteRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
 }

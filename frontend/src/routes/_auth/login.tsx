@@ -1,4 +1,4 @@
-import { Button } from '#/components/ui/button'
+import { Button, buttonVariants } from '#/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
@@ -45,30 +45,30 @@ function LoginPage() {
         <form onSubmit={handleSubmit} className="w-full max-w-sm">
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="form-email">Email</FieldLabel>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
 
               <Input
-                id="form-email"
+                id="email"
                 name="email"
                 type="email"
                 placeholder="john@example.com"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={hasError}
                 required
               />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="form-password">Password</FieldLabel>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
 
               <Input
-                id="form-password"
+                id="password"
                 name="password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={hasError}
                 required
               />
@@ -86,13 +86,15 @@ function LoginPage() {
             )}
           </Button>
 
-          <Button className="mt-2 w-full" variant="link" type="button">
-            <Link to="/signup">Don&apos;t have an account? Sign up</Link>
-          </Button>
-
-          <Button className="mt-2 w-full" variant="link" type="button">
-            <Link to="/signup">Forgot password?</Link>
-          </Button>
+          <Link
+            to="/forgot-password"
+            className={buttonVariants({
+              variant: 'link',
+              className: 'inline-flex items-center gap-2',
+            })}
+          >
+            Forgot password?
+          </Link>
         </form>
       </CardContent>
     </Card>

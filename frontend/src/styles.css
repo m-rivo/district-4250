@@ -195,7 +195,7 @@ body::after {
   mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
 }
 
-a {
+/* a {
   color: var(--lagoon-deep);
   text-decoration-color: rgba(50, 143, 151, 0.4);
   text-decoration-thickness: 1px;
@@ -204,7 +204,7 @@ a {
 
 a:hover {
   color: #246f76;
-}
+} */
 
 code {
   font-size: 0.9em;
