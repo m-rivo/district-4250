@@ -13,6 +13,7 @@ import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppMembersRouteImport } from './routes/_app/members'
+import { Route as AuthConfirmPasswordResetRouteImport } from './routes/_auth/confirm-password-reset'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
@@ -37,6 +38,12 @@ const AppMembersRoute = AppMembersRouteImport.update({
   path: '/members',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AuthConfirmPasswordResetRoute =
+  AuthConfirmPasswordResetRouteImport.update({
+    id: '/confirm-password-reset',
+    path: '/confirm-password-reset',
+    getParentRoute: () => AuthRouteRoute,
+  } as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
@@ -66,6 +73,7 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/members': typeof AppMembersRoute
+  '/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
@@ -75,6 +83,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/members': typeof AppMembersRoute
+  '/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_app/members': typeof AppMembersRoute
+  '/_auth/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/members'
+    | '/confirm-password-reset'
     | '/forgot-password'
     | '/login'
     | '/signup'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/members'
+    | '/confirm-password-reset'
     | '/forgot-password'
     | '/login'
     | '/signup'
@@ -117,6 +129,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/_auth'
     | '/_app/members'
+    | '/_auth/confirm-password-reset'
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/signup'
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/members'
       preLoaderRoute: typeof AppMembersRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/_auth/confirm-password-reset': {
+      id: '/_auth/confirm-password-reset'
+      path: '/confirm-password-reset'
+      fullPath: '/confirm-password-reset'
+      preLoaderRoute: typeof AuthConfirmPasswordResetRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_auth/forgot-password': {
       id: '/_auth/forgot-password'
@@ -215,12 +235,14 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 )
 
 interface AuthRouteRouteChildren {
+  AuthConfirmPasswordResetRoute: typeof AuthConfirmPasswordResetRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthConfirmPasswordResetRoute: AuthConfirmPasswordResetRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,

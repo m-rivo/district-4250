@@ -130,3 +130,33 @@ export const sendResetEmail = createServerFn({ method: 'POST' })
 
     return { success: true }
   })
+
+export const confirmResetPassword = createServerFn({ method: 'POST' })
+  .validator(
+    (data: {
+      token: string
+      newPassword: string
+      confirmNewPassword: string
+    }) => {
+      const token = data.token.trim()
+
+      return {
+        token,
+        newPassword: data.newPassword,
+        confirmNewPassword: data.confirmNewPassword,
+      }
+    },
+  )
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+
+    await pb
+      .collection('users')
+      .confirmPasswordReset(
+        data.token,
+        data.newPassword,
+        data.confirmNewPassword,
+      )
+
+    return { success: true }
+  })
