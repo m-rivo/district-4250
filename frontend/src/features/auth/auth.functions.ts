@@ -87,10 +87,18 @@ export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
         pb.authStore.exportToCookie(COOKIE_OPTIONS),
       )
 
+      const member = authData.record.member
+      let name: string | null = null
+
+      if (member) {
+        const memberData = await pb.collection('members').getOne(member)
+        name = memberData.first_name
+      }
+
       return {
         id: authData.record.id,
         email: authData.record.email,
-        name: authData.record.name,
+        name: name,
       }
     } catch {
       pb.authStore.clear()
