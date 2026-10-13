@@ -6,6 +6,7 @@ import { Spinner } from '#/components/ui/spinner'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { login } from '#/features/auth/auth.functions'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,
@@ -29,7 +30,10 @@ function LoginPage() {
       console.log(result)
       await navigate({ to: '/' })
     } catch (error: any) {
-      console.error('Error al iniciar sesión:', error?.response || error)
+      toast.error('Unable to sign in', {
+        description: 'Please check your credentials and try again.',
+      })
+      console.error('Login error:', error)
       setHasError(true)
     } finally {
       setIsLoading(false)
