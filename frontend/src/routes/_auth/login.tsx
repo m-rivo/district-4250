@@ -91,6 +91,15 @@ function LoginPage() {
           </Button>
 
           <Link
+            to="/signup"
+            className={buttonVariants({
+              variant: 'link',
+              className: 'inline-flex items-center gap-2',
+            })}
+          >
+            Don&apos;t have an account? Signup
+          </Link>
+          <Link
             to="/forgot-password"
             className={buttonVariants({
               variant: 'link',
