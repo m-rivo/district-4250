@@ -5,7 +5,7 @@ import { Input } from '#/components/ui/input'
 import { Spinner } from '#/components/ui/spinner'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { confirmResetPassword } from '#/features/auth/auth.functions'
+import { confirmResetPassword } from '#/functions/auth/auth.functions'
 import { ArrowLeftIcon } from 'lucide-react'
 import { toast } from 'sonner'
 

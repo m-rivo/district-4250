@@ -1,4 +1,4 @@
-import { logout } from '#/features/auth/auth.functions'
+import { logout } from '#/functions/auth/auth.functions'
 import { useNavigate } from '@tanstack/react-router'
 import { Button } from './ui/button'
 import { useState } from 'react'

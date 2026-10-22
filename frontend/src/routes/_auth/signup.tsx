@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { SignupFormSchema } from '#/features/auth/auth.schemas'
-import type { SignupValues } from '#/features/auth/auth.schemas'
+import { SignupFormSchema } from '#/functions/auth/auth.schemas'
+import type { SignupValues } from '#/functions/auth/auth.schemas'
 import { toast } from 'sonner'
 
 import { Button, buttonVariants } from '#/components/ui/button'
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { Spinner } from '#/components/ui/spinner'
-import { signup } from '#/features/auth/auth.functions'
+import { signup } from '#/functions/auth/auth.functions'
 import { useState } from 'react'
 import { ArrowLeftIcon, CheckCircle2 } from 'lucide-react'
 

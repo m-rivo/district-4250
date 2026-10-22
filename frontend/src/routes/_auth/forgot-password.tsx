@@ -12,7 +12,7 @@ import { Spinner } from '#/components/ui/spinner'
 import { useState } from 'react'
 import { ArrowLeftIcon, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { sendResetEmail } from '#/features/auth/auth.functions'
+import { sendResetEmail } from '#/functions/auth/auth.functions'
 
 export const Route = createFileRoute('/_auth/forgot-password')({
   component: ForgotPasswordPage,

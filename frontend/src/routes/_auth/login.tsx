@@ -5,7 +5,7 @@ import { Input } from '#/components/ui/input'
 import { Spinner } from '#/components/ui/spinner'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { login } from '#/features/auth/auth.functions'
+import { login } from '#/functions/auth/auth.functions'
 import { toast } from 'sonner'
 import { AppLogo } from '#/components/ui/app-logo'
 

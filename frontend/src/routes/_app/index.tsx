@@ -1,4 +1,4 @@
-import { getCurrentUser } from '#/features/auth/auth.functions'
+import { getCurrentUser } from '#/functions/auth/auth.functions'
 import { m } from '#/paraglide/messages'
 import { createFileRoute } from '@tanstack/react-router'
 

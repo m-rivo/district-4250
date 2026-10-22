@@ -5,7 +5,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { ArrowLeftIcon, CheckCircle2, CircleXIcon } from 'lucide-react'
 import { toast } from 'sonner'
-import { verifyEmail } from '#/features/auth/auth.functions'
+import { verifyEmail } from '#/functions/auth/auth.functions'
 
 export const Route = createFileRoute('/_auth/verify-email')({
   validateSearch: (search: Record<string, unknown>) => ({
