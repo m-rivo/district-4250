@@ -109,12 +109,11 @@ function VerifyEmailPage() {
           <Link
             to="/login"
             className={buttonVariants({
-              variant: 'link',
+              variant: 'default',
               className: 'inline-flex items-center gap-2',
             })}
           >
-            <ArrowLeftIcon />
-            Back to login
+            Login
           </Link>
         </CardContent>
       )}
