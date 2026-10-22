@@ -10,12 +10,16 @@ import { Field, FieldGroup, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { Spinner } from '#/components/ui/spinner'
 import { signup } from '#/features/auth/auth.functions'
+import { useState } from 'react'
+import { ArrowLeftIcon, CheckCircle2 } from 'lucide-react'
 
 export const Route = createFileRoute('/_auth/signup')({
   component: SignupPage,
 })
 
 function SignupPage() {
+  const [success, setSuccess] = useState(false)
+
   const form = useForm({
     defaultValues: {
       name: '',
@@ -27,7 +31,6 @@ function SignupPage() {
     } satisfies SignupValues,
 
     validators: {
-      onChange: SignupFormSchema,
       onSubmit: SignupFormSchema,
     },
 
@@ -40,12 +43,12 @@ function SignupPage() {
         first_surname: value.lastName.trim(),
       }
 
+      setSuccess(false)
+
       try {
         await signup({ data })
 
-        toast.success('Account created', {
-          description: 'Check your email to verify your account.',
-        })
+        setSuccess(true)
       } catch (error) {
         console.error('Signup failed:', error)
 
@@ -56,7 +59,36 @@ function SignupPage() {
     },
   })
 
-  return (
+  return success ? (
+    <Card className="w-full max-w-sm">
+      <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
+        <div className="flex size-16 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+          <CheckCircle2 className="size-9" />
+        </div>
+
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Please verify your email
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            An email has been sent to{' '}
+            <strong>{form.getFieldValue('email')}</strong>. Click on the link to
+            complete your signup.
+          </p>
+        </div>
+        <Link
+          to="/login"
+          className={buttonVariants({
+            variant: 'link',
+            className: 'inline-flex items-center gap-2',
+          })}
+        >
+          <ArrowLeftIcon />
+          Back to login
+        </Link>
+      </CardContent>
+    </Card>
+  ) : (
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="text-center">Sign up</CardTitle>
@@ -64,7 +96,7 @@ function SignupPage() {
 
       <CardContent>
         <form
-          className="w-full"
+          className="w-full text-center"
           noValidate
           onSubmit={(e) => {
             e.preventDefault()
