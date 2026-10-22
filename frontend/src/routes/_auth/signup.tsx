@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { RegisterUserSchema } from '#/features/auth/auth.schemas'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { SignupFormSchema } from '#/features/auth/auth.schemas'
 import type { SignupValues } from '#/features/auth/auth.schemas'
 import { toast } from 'sonner'
 
@@ -9,14 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { Spinner } from '#/components/ui/spinner'
+import { signup } from '#/features/auth/auth.functions'
 
 export const Route = createFileRoute('/_auth/signup')({
   component: SignupPage,
 })
 
 function SignupPage() {
-  const navigate = useNavigate()
-
   const form = useForm({
     defaultValues: {
       name: '',
@@ -28,36 +27,32 @@ function SignupPage() {
     } satisfies SignupValues,
 
     validators: {
-      onChange: RegisterUserSchema,
-      onSubmit: RegisterUserSchema,
+      onChange: SignupFormSchema,
+      onSubmit: SignupFormSchema,
     },
 
     onSubmit: async ({ value }) => {
-      const signupData = {
-        first_name: value.name.trim(),
-        first_surname: value.lastName.trim(),
+      const data = {
         email: value.email.trim().toLowerCase(),
         password: value.password,
         passwordConfirm: value.confirmPassword,
+        first_name: value.name.trim(),
+        first_surname: value.lastName.trim(),
       }
 
-      // TODO: Call your TanStack Start signup server function here.
-      // PocketBase should create the member and user, then send
-      // the email verification message.
+      try {
+        await signup({ data })
 
-      console.log('Validated signup data:', {
-        ...signupData,
-        password: '[hidden]',
-        passwordConfirm: '[hidden]',
-      })
+        toast.success('Account created', {
+          description: 'Check your email to verify your account.',
+        })
+      } catch (error) {
+        console.error('Signup failed:', error)
 
-      toast.info('Validation successful', {
-        description: 'Connect the PocketBase signup function to continue.',
-      })
-
-      // Navigate after signup and the desired verification flow
-      // have been implemented.
-      void navigate
+        toast.error('Unable to create your account', {
+          description: 'Please check your information and try again.',
+        })
+      }
     },
   })
 

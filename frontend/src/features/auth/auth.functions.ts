@@ -1,19 +1,17 @@
-import PocketBase from 'pocketbase'
+import { createServerPocketBase } from '#/lib/pocketbase/server'
 import { createServerFn } from '@tanstack/react-start'
 import {
   getRequestHeader,
   setResponseHeader,
 } from '@tanstack/react-start/server'
+import { SignupServerSchema } from './auth.schemas'
+import z from 'zod'
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: import.meta.env.PROD,
   sameSite: 'Lax' as const,
   path: '/',
-}
-
-function createServerPocketBase() {
-  return new PocketBase(import.meta.env.VITE_API_URL)
 }
 
 function clearAuthCookie() {
@@ -55,7 +53,6 @@ export const login = createServerFn({ method: 'POST' })
         user: {
           id: authData.record.id,
           email: authData.record.email,
-          name: authData.record.name,
         },
       }
     } catch {
@@ -80,25 +77,21 @@ export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
     }
 
     try {
-      const authData = await pb.collection('users').authRefresh()
+      const user = await pb.collection('users').authRefresh()
 
       setResponseHeader(
         'Set-Cookie',
         pb.authStore.exportToCookie(COOKIE_OPTIONS),
       )
 
-      const member = authData.record.member
-      let name: string | null = null
-
-      if (member) {
-        const memberData = await pb.collection('members').getOne(member)
-        name = memberData.first_name
-      }
+      const member = await pb
+        .collection('members')
+        .getFirstListItem(`user = "${user.record.id}"`)
 
       return {
-        id: authData.record.id,
-        email: authData.record.email,
-        name: name,
+        id: user.record.id,
+        email: user.record.email,
+        name: member.first_name,
       }
     } catch {
       pb.authStore.clear()
@@ -157,6 +150,57 @@ export const confirmResetPassword = createServerFn({ method: 'POST' })
         data.newPassword,
         data.confirmNewPassword,
       )
+
+    return { success: true }
+  })
+
+export const signup = createServerFn({ method: 'POST' })
+  .validator(SignupServerSchema)
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+    console.log('[signup] Validated server data')
+
+    const user = await pb.collection('users').create({
+      email: data.email,
+      emailVisibility: false,
+      password: data.password,
+      passwordConfirm: data.passwordConfirm,
+    })
+    console.log('[signup] User created:', user.id)
+
+    const member = await pb.collection('members').create({
+      user: user.id,
+      first_name: data.first_name,
+      first_surname: data.first_surname,
+      is_active: true,
+    })
+    console.log('[signup] Member created:', member.id)
+
+    try {
+      await pb.collection('users').requestVerification(data.email)
+      console.log('[signup] Verification requested')
+    } catch (error: any) {
+      console.error('[signup] Verification error:', {
+        message: error.message,
+        status: error.status,
+        response: error.response,
+        data: error.data,
+      })
+    }
+
+    return { success: true }
+  })
+
+export const verifyEmail = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({
+      token: z.string().trim().min(1).max(4096),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+
+    await pb.collection('users').confirmVerification(data.token)
 
     return { success: true }
   })

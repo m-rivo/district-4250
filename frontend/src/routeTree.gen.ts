@@ -17,6 +17,7 @@ import { Route as AuthConfirmPasswordResetRouteImport } from './routes/_auth/con
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
+import { Route as AuthVerifyEmailRouteImport } from './routes/_auth/verify-email'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 
@@ -59,6 +60,11 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const DemoTableRoute = DemoTableRouteImport.update({
   id: '/demo/table',
   path: '/demo/table',
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/verify-email': typeof AuthVerifyEmailRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/verify-email': typeof AuthVerifyEmailRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
+  '/_auth/verify-email': typeof AuthVerifyEmailRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/_app/': typeof AppIndexRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
+    | '/verify-email'
     | '/demo/table'
     | '/demo/tanstack-query'
   fileRoutesByTo: FileRoutesByTo
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
+    | '/verify-email'
     | '/demo/table'
     | '/demo/tanstack-query'
   id:
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/signup'
+    | '/_auth/verify-email'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/_app/'
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_auth/verify-email': {
+      id: '/_auth/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/demo/table': {
       id: '/demo/table'
       path: '/demo/table'
@@ -239,6 +258,7 @@ interface AuthRouteRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
@@ -246,6 +266,7 @@ const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
