@@ -7,6 +7,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { login } from '#/features/auth/auth.functions'
 import { toast } from 'sonner'
+import { AppLogo } from '#/components/ui/app-logo'
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,
@@ -41,12 +42,13 @@ function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
+    <Card className="w-sm mx-4">
+      <CardHeader className="flex flex-col items-center gap-4">
+        <AppLogo className="sm:w-56" />
         <CardTitle className="text-center">Login to your account</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="w-full max-w-sm">
+        <form onSubmit={handleSubmit} className="w-full ">
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -90,24 +92,28 @@ function LoginPage() {
             )}
           </Button>
 
-          <Link
-            to="/signup"
-            className={buttonVariants({
-              variant: 'link',
-              className: 'inline-flex items-center gap-2',
-            })}
-          >
-            Don&apos;t have an account? Signup
-          </Link>
-          <Link
-            to="/forgot-password"
-            className={buttonVariants({
-              variant: 'link',
-              className: 'inline-flex items-center gap-2',
-            })}
-          >
-            Forgot password?
-          </Link>
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className={buttonVariants({
+                variant: 'link',
+                className: 'inline-flex items-center gap-2',
+              })}
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <div className="flex justify-center mt-4">
+            <Link
+              to="/signup"
+              className={buttonVariants({
+                variant: 'link',
+                className: 'inline-flex items-center gap-2',
+              })}
+            >
+              Don&apos;t have an account? Signup
+            </Link>
+          </div>
         </form>
       </CardContent>
     </Card>
