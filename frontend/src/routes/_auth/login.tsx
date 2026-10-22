@@ -26,8 +26,8 @@ function LoginPage() {
 
     try {
       setIsLoading(true)
-      const result = await login({ data: { email, password } })
-      console.log(result)
+      await login({ data: { email, password } })
+
       await navigate({ to: '/' })
     } catch (error: any) {
       toast.error('Unable to sign in', {
