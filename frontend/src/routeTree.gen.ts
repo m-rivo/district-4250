@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AppMembersRouteImport } from './routes/_app/members'
+import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AuthConfirmPasswordResetRouteImport } from './routes/_auth/confirm-password-reset'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
@@ -20,6 +20,10 @@ import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
 import { Route as AuthVerifyEmailRouteImport } from './routes/_auth/verify-email'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
+import { Route as AppClubsIndexRouteImport } from './routes/_app/clubs/index'
+import { Route as AppClubsClubIdRouteImport } from './routes/_app/clubs/$clubId'
+import { Route as AppMembersIndexRouteImport } from './routes/_app/members/index'
+import { Route as AppMembersMemberIdRouteImport } from './routes/_app/members/$memberId'
 
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
@@ -34,9 +38,9 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppMembersRoute = AppMembersRouteImport.update({
-  id: '/members',
-  path: '/members',
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AuthConfirmPasswordResetRoute =
@@ -75,10 +79,30 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   path: '/demo/tanstack-query',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppClubsIndexRoute = AppClubsIndexRouteImport.update({
+  id: '/clubs/',
+  path: '/clubs/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppClubsClubIdRoute = AppClubsClubIdRouteImport.update({
+  id: '/clubs/$clubId',
+  path: '/clubs/$clubId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppMembersIndexRoute = AppMembersIndexRouteImport.update({
+  id: '/members/',
+  path: '/members/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppMembersMemberIdRoute = AppMembersMemberIdRouteImport.update({
+  id: '/members/$memberId',
+  path: '/members/$memberId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/members': typeof AppMembersRoute
+  '/profile': typeof AppProfileRoute
   '/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -86,10 +110,14 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof AuthVerifyEmailRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/clubs/$clubId': typeof AppClubsClubIdRoute
+  '/members/$memberId': typeof AppMembersMemberIdRoute
+  '/clubs/': typeof AppClubsIndexRoute
+  '/members/': typeof AppMembersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
-  '/members': typeof AppMembersRoute
+  '/profile': typeof AppProfileRoute
   '/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -97,12 +125,16 @@ export interface FileRoutesByTo {
   '/verify-email': typeof AuthVerifyEmailRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/clubs/$clubId': typeof AppClubsClubIdRoute
+  '/members/$memberId': typeof AppMembersMemberIdRoute
+  '/clubs': typeof AppClubsIndexRoute
+  '/members': typeof AppMembersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
-  '/_app/members': typeof AppMembersRoute
+  '/_app/profile': typeof AppProfileRoute
   '/_auth/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
@@ -111,12 +143,16 @@ export interface FileRoutesById {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/clubs/$clubId': typeof AppClubsClubIdRoute
+  '/_app/members/$memberId': typeof AppMembersMemberIdRoute
+  '/_app/clubs/': typeof AppClubsIndexRoute
+  '/_app/members/': typeof AppMembersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/members'
+    | '/profile'
     | '/confirm-password-reset'
     | '/forgot-password'
     | '/login'
@@ -124,10 +160,14 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/clubs/$clubId'
+    | '/members/$memberId'
+    | '/clubs/'
+    | '/members/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/members'
+    | '/profile'
     | '/confirm-password-reset'
     | '/forgot-password'
     | '/login'
@@ -135,11 +175,15 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/clubs/$clubId'
+    | '/members/$memberId'
+    | '/clubs'
+    | '/members'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
-    | '/_app/members'
+    | '/_app/profile'
     | '/_auth/confirm-password-reset'
     | '/_auth/forgot-password'
     | '/_auth/login'
@@ -148,6 +192,10 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/_app/'
+    | '/_app/clubs/$clubId'
+    | '/_app/members/$memberId'
+    | '/_app/clubs/'
+    | '/_app/members/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -180,11 +228,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/members': {
-      id: '/_app/members'
-      path: '/members'
-      fullPath: '/members'
-      preLoaderRoute: typeof AppMembersRouteImport
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_auth/confirm-password-reset': {
@@ -236,17 +284,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoTanstackQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/clubs/': {
+      id: '/_app/clubs/'
+      path: '/clubs'
+      fullPath: '/clubs/'
+      preLoaderRoute: typeof AppClubsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/clubs/$clubId': {
+      id: '/_app/clubs/$clubId'
+      path: '/clubs/$clubId'
+      fullPath: '/clubs/$clubId'
+      preLoaderRoute: typeof AppClubsClubIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/members/': {
+      id: '/_app/members/'
+      path: '/members'
+      fullPath: '/members/'
+      preLoaderRoute: typeof AppMembersIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/members/$memberId': {
+      id: '/_app/members/$memberId'
+      path: '/members/$memberId'
+      fullPath: '/members/$memberId'
+      preLoaderRoute: typeof AppMembersMemberIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
 
 interface AppRouteRouteChildren {
-  AppMembersRoute: typeof AppMembersRoute
+  AppProfileRoute: typeof AppProfileRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppClubsClubIdRoute: typeof AppClubsClubIdRoute
+  AppMembersMemberIdRoute: typeof AppMembersMemberIdRoute
+  AppClubsIndexRoute: typeof AppClubsIndexRoute
+  AppMembersIndexRoute: typeof AppMembersIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppMembersRoute: AppMembersRoute,
+  AppProfileRoute: AppProfileRoute,
   AppIndexRoute: AppIndexRoute,
+  AppClubsClubIdRoute: AppClubsClubIdRoute,
+  AppMembersMemberIdRoute: AppMembersMemberIdRoute,
+  AppClubsIndexRoute: AppClubsIndexRoute,
+  AppMembersIndexRoute: AppMembersIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
