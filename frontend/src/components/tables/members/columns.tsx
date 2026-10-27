@@ -3,58 +3,62 @@ import type { MemberListItem } from '#/types/member'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Link } from '@tanstack/react-router'
 import { Badge } from '#/components/ui/badge'
-
-// FIXME: cambiar accessors por display
+import { Button } from '#/components/ui/button'
+import { ArrowUpDown } from 'lucide-react'
 
 const columnHelper = createColumnHelper<MemberListItem>()
 
 export const columns = columnHelper.columns([
-  columnHelper.display({
-    id: 'avatar',
-    header: 'Avatar',
-    cell: ({ row }) => {
-      const member = row.original as MemberListItem
-      const fullName = `${member.first_name} ${member.first_surname}`.trim()
+  columnHelper.accessor(
+    (row: MemberListItem) => `${row.first_name} ${row.first_surname}`,
+    {
+      id: 'name',
+      header: 'Name',
+      cell: ({ row }) => {
+        const member = row.original as MemberListItem
+        const fullName = `${member.first_name} ${member.first_surname}`
 
-      return (
-        <Avatar>
-          <AvatarImage
-            src={member.profile_picture_url ?? undefined}
-            alt={fullName}
-          />
-          <AvatarFallback>
-            {member.first_name[0]}
-            {member.first_surname[0]}
-          </AvatarFallback>
-        </Avatar>
-      )
+        return (
+          <div className="flex items-center gap-2">
+            <Avatar>
+              <AvatarImage
+                src={member.profile_picture_url ?? undefined}
+                alt={fullName}
+              />
+              <AvatarFallback>
+                {member.first_name[0]}
+                {member.first_surname[0]}
+              </AvatarFallback>
+            </Avatar>
+
+            <Link
+              to="/members/$memberId"
+              params={{ memberId: member.id }}
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              {fullName}
+            </Link>
+          </div>
+        )
+      },
     },
-  }),
-
-  columnHelper.display({
-    id: 'name',
-    header: 'Name',
-    cell: ({ row }) => {
-      const member = row.original as MemberListItem
-      const fullName = member.first_name + ' ' + member.first_surname
-
-      return (
-        <Link
-          to="/members/$memberId"
-          params={{ memberId: member.id }}
-          className="text-primary underline-offset-4 hover:underline"
-        >
-          {fullName}
-        </Link>
-      )
-    },
-  }),
+  ),
 
   columnHelper.accessor(
     (row: MemberListItem) => row.expand?.club?.name ?? 'No club',
     {
       id: 'club',
-      header: 'Club',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Club
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         const member = row.original as MemberListItem
         const club = member.expand?.club
@@ -74,38 +78,50 @@ export const columns = columnHelper.columns([
     },
   ),
 
-  columnHelper.accessor(
-    (row: MemberListItem) => (
-      <div className="flex gap-1">
-        {row.expand?.roles?.map((role) =>
-          role.name === 'socio' ? (
-            <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+  columnHelper.display({
+    id: 'roles',
+    header: 'Roles',
+    cell: ({ row }) => {
+      const member = row.original as MemberListItem
+      const roles = member.expand?.roles ?? []
+
+      if (roles.length === 0) return 'Guest'
+
+      return (
+        <div className="flex gap-1">
+          {roles.map((role) => (
+            <Badge
+              key={role.id}
+              variant={role.name === 'socio' ? 'purple' : 'sky'}
+            >
               {role.name}
             </Badge>
-          ) : (
-            <Badge className="bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
-              {role.name}
-            </Badge>
-          ),
-        ) ?? ''}
-      </div>
-    ),
-    {
-      id: 'roles',
-      header: 'Roles',
-      cell: ({ getValue }) => getValue() || 'No roles',
+          ))}
+        </div>
+      )
     },
-  ),
+  }),
 
   columnHelper.accessor('is_active', {
     header: 'Status',
     cell: ({ getValue }) =>
       getValue() ? (
-        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
-          Active
-        </Badge>
+        <Badge variant="green">Active</Badge>
       ) : (
         <Badge variant="secondary">Inactive</Badge>
       ),
   }),
+
+  columnHelper.accessor(
+    (row: MemberListItem) =>
+      `${row.first_name} ${row.first_surname} ${row.expand?.club?.name ?? ''}`,
+    {
+      id: 'search',
+      enableHiding: true,
+      header: () => null,
+      cell: () => null,
+      enableSorting: false,
+      filterFn: 'includesString',
+    },
+  ),
 ])
