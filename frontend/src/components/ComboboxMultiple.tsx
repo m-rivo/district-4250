@@ -9,12 +9,14 @@ import {
   ComboboxList,
   ComboboxValue,
 } from '@/components/ui/combobox'
+import { Spinner } from './ui/spinner'
 
 interface Props {
   data: { id: string; name: string }[]
   value: string[]
   setValue: (value: string[]) => void
   placeholder: string
+  isLoading: boolean
 }
 
 export function ComboboxMultiple({
@@ -22,6 +24,7 @@ export function ComboboxMultiple({
   value,
   setValue,
   placeholder,
+  isLoading,
 }: Props) {
   return (
     <Combobox items={data} multiple value={value} onValueChange={setValue}>
@@ -35,7 +38,8 @@ export function ComboboxMultiple({
             return <ComboboxChip key={item.id}>{item.name}</ComboboxChip>
           })}
         </ComboboxValue>
-        <ComboboxChipsInput placeholder={placeholder} />
+        <ComboboxChipsInput placeholder={placeholder} disabled={isLoading} />
+        {isLoading && <Spinner />}
       </ComboboxChips>
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>

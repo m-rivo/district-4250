@@ -4,7 +4,6 @@ import { getMembersList } from '#/functions/members/members.functions'
 import { useQuery } from '@tanstack/react-query'
 import { DataTable } from '#/components/ui/data-table/data-table'
 import { columns } from '#/components/tables/members/columns'
-import { SkeletonTable } from '#/components/SkeletonTable'
 import { useState } from 'react'
 import { Input } from '#/components/ui/input'
 import { DataTablePagination } from '#/components/ui/data-table/data-table-pagination'
@@ -12,8 +11,11 @@ import { useDebounce } from '#/hooks/use-debounce'
 import { ComboboxMultiple } from '#/components/ComboboxMultiple'
 import { Button } from '#/components/ui/button'
 import { SelectIsActive } from '#/components/SelectIsActive'
-
-// TODO: add sort
+import { CardContent } from '#/components/ui/card'
+import { CircleXIcon } from 'lucide-react'
+import { getClubsList } from '#/functions/club.functions'
+import { ComboboxMultipleGroupedClubs } from '#/components/ComboboxMultipleGroupedClubs'
+import { getRoleList } from '#/functions/role.functions'
 
 export const Route = createFileRoute('/_app/members/')({
   component: MembersPage,
@@ -26,15 +28,6 @@ function MembersPage() {
   const [clubIds, setClubIds] = useState<string[]>([])
   const [roleIds, setRoleIds] = useState<string[]>([])
   const [isActive, setIsActive] = useState<boolean | null>(null)
-  const clubList = [
-    { id: 'xkuqfciyyn3e2kf', name: 'Merendón' },
-    { id: 'p0dxg2fvdvr7f8a', name: 'Usula' },
-  ]
-  const roleList = [
-    { id: 'bu2rgb7tk0kxe5q', name: 'RDR' },
-    { id: 'c4t0of8ip1c3yvb', name: 'Presidente' },
-    { id: 'uzmoo4qyokzqaa3', name: 'Socio' },
-  ]
 
   const debouncedSearch = useDebounce(search, 300)
 
@@ -70,22 +63,35 @@ function MembersPage() {
       }),
   })
 
-  if (isPending) {
-    return (
-      <section className="rounded-2xl p-6 sm:p-8">
-        <h1 className="mb-3 text-4xl font-bold sm:text-5xl">{m.members()}</h1>
-        <SkeletonTable />
-      </section>
-    )
-  }
+  const { data: clubList = [], isPending: isLoadingClubs } = useQuery({
+    queryKey: ['clubs'],
+    queryFn: () => getClubsList(),
+  })
+
+  const { data: roleList = [], isPending: isLoadingRoles } = useQuery({
+    queryKey: ['roles'],
+    queryFn: () => getRoleList(),
+  })
 
   if (isError) {
     return (
       <section className="rounded-2xl p-6 sm:p-8">
         <h1 className="mb-3 text-4xl font-bold sm:text-5xl">{m.members()}</h1>
-        <p role="alert" className="text-destructive">
-          Error loading members: {error.message}
-        </p>
+
+        <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
+          <div className="flex size-16 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+            <CircleXIcon className="size-9" />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold tracking-tight">
+              Error loading members
+            </h2>
+            <p role="alert" className="text-sm text-muted-foreground">
+              {error.message}
+            </p>
+          </div>
+        </CardContent>
       </section>
     )
   }
@@ -95,46 +101,68 @@ function MembersPage() {
       <h1 className="mb-3 text-4xl font-bold sm:text-5xl">{m.members()}</h1>
 
       <div>
-        <div className="flex items-center py-4 gap-2">
-          <Input
-            placeholder="Search by name ..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              setPage(1)
-            }}
-            className="max-w-sm"
-          />
-          <ComboboxMultiple
-            data={clubList}
-            value={clubIds}
-            setValue={setClubIds}
-            placeholder="Clubs"
-          />
-          <ComboboxMultiple
-            data={roleList}
-            value={roleIds}
-            setValue={setRoleIds}
-            placeholder="Roles"
-          />
-          <SelectIsActive
-            value={isActive}
-            setValue={(value) => {
-              setIsActive(value)
-              setPage(1)
-            }}
-          />
-          <Button variant="outline" onClick={handleClearFilters}>
-            Clear all filters
-          </Button>
+        {/* FILTERS */}
+        <div className="flex items-center py-4 gap-2 flex-wrap">
+          <div className="flex-1">
+            <Input
+              placeholder="Search by name"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(1)
+              }}
+              className="max-w-sm"
+            />
+          </div>
+          <div className="flex-1">
+            <ComboboxMultipleGroupedClubs
+              data={clubList}
+              value={clubIds}
+              setValue={setClubIds}
+              isLoading={isLoadingClubs}
+            />
+          </div>
+          <div className="flex-1">
+            <ComboboxMultiple
+              data={roleList}
+              value={roleIds}
+              setValue={setRoleIds}
+              placeholder="Roles"
+              isLoading={isLoadingRoles}
+            />
+          </div>
+          <div>
+            <SelectIsActive
+              value={isActive}
+              setValue={(value) => {
+                setIsActive(value)
+                setPage(1)
+              }}
+            />
+          </div>
+          <div>
+            <Button
+              variant="outline"
+              onClick={handleClearFilters}
+              className="w-full"
+            >
+              Clear all filters
+            </Button>
+          </div>
         </div>
+        {/* TABLE */}
         <div className="overflow-hidden rounded-md border">
-          <DataTable columns={columns} data={data.items} />
+          <DataTable
+            columns={columns}
+            data={data?.items ?? []}
+            isLoading={isPending}
+          />
         </div>
+        {/* PAGINATION */}
         <DataTablePagination
           page={page}
           perPage={perPage}
-          totalPages={data.totalPages}
+          totalPages={data?.totalPages ?? 0}
           onPageChange={setPage}
           onPerPageChange={handlePerPageChange}
         />

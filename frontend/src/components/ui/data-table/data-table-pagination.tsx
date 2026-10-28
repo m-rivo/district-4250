@@ -22,6 +22,7 @@ interface DataTablePaginationProps {
   onPerPageChange: (perPage: number) => void
 }
 
+// FIXME: responsiveness
 export function DataTablePagination({
   page,
   perPage,
@@ -32,8 +33,8 @@ export function DataTablePagination({
   const hasPages = totalPages > 0
 
   return (
-    <div className="flex items-center justify-end px-2">
-      <div className="flex items-center space-x-6 lg:space-x-8">
+    <div className="flex items-center justify-end p-2">
+      <div className="flex items-center flex-wrap space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
           <Select
