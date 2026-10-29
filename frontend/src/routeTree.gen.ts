@@ -24,6 +24,8 @@ import { Route as AppClubsIndexRouteImport } from './routes/_app/clubs/index'
 import { Route as AppClubsClubIdRouteImport } from './routes/_app/clubs/$clubId'
 import { Route as AppMembersIndexRouteImport } from './routes/_app/members/index'
 import { Route as AppMembersMemberIdRouteImport } from './routes/_app/members/$memberId'
+import { Route as AppProjectsIndexRouteImport } from './routes/_app/projects/index'
+import { Route as AppProjectsProjectIdRouteImport } from './routes/_app/projects/$projectId'
 
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
@@ -99,6 +101,16 @@ const AppMembersMemberIdRoute = AppMembersMemberIdRouteImport.update({
   path: '/members/$memberId',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppProjectsProjectIdRoute = AppProjectsProjectIdRouteImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -112,8 +124,10 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/clubs/$clubId': typeof AppClubsClubIdRoute
   '/members/$memberId': typeof AppMembersMemberIdRoute
+  '/projects/$projectId': typeof AppProjectsProjectIdRoute
   '/clubs/': typeof AppClubsIndexRoute
   '/members/': typeof AppMembersIndexRoute
+  '/projects/': typeof AppProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
@@ -127,8 +141,10 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/clubs/$clubId': typeof AppClubsClubIdRoute
   '/members/$memberId': typeof AppMembersMemberIdRoute
+  '/projects/$projectId': typeof AppProjectsProjectIdRoute
   '/clubs': typeof AppClubsIndexRoute
   '/members': typeof AppMembersIndexRoute
+  '/projects': typeof AppProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -145,8 +161,10 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/clubs/$clubId': typeof AppClubsClubIdRoute
   '/_app/members/$memberId': typeof AppMembersMemberIdRoute
+  '/_app/projects/$projectId': typeof AppProjectsProjectIdRoute
   '/_app/clubs/': typeof AppClubsIndexRoute
   '/_app/members/': typeof AppMembersIndexRoute
+  '/_app/projects/': typeof AppProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -162,8 +180,10 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/clubs/$clubId'
     | '/members/$memberId'
+    | '/projects/$projectId'
     | '/clubs/'
     | '/members/'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,8 +197,10 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/clubs/$clubId'
     | '/members/$memberId'
+    | '/projects/$projectId'
     | '/clubs'
     | '/members'
+    | '/projects'
   id:
     | '__root__'
     | '/_app'
@@ -194,8 +216,10 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/clubs/$clubId'
     | '/_app/members/$memberId'
+    | '/_app/projects/$projectId'
     | '/_app/clubs/'
     | '/_app/members/'
+    | '/_app/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -312,6 +336,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMembersMemberIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/projects/': {
+      id: '/_app/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof AppProjectsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/projects/$projectId': {
+      id: '/_app/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof AppProjectsProjectIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
 
@@ -320,8 +358,10 @@ interface AppRouteRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppClubsClubIdRoute: typeof AppClubsClubIdRoute
   AppMembersMemberIdRoute: typeof AppMembersMemberIdRoute
+  AppProjectsProjectIdRoute: typeof AppProjectsProjectIdRoute
   AppClubsIndexRoute: typeof AppClubsIndexRoute
   AppMembersIndexRoute: typeof AppMembersIndexRoute
+  AppProjectsIndexRoute: typeof AppProjectsIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -329,8 +369,10 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppClubsClubIdRoute: AppClubsClubIdRoute,
   AppMembersMemberIdRoute: AppMembersMemberIdRoute,
+  AppProjectsProjectIdRoute: AppProjectsProjectIdRoute,
   AppClubsIndexRoute: AppClubsIndexRoute,
   AppMembersIndexRoute: AppMembersIndexRoute,
+  AppProjectsIndexRoute: AppProjectsIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

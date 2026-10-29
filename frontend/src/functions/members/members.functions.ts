@@ -60,8 +60,6 @@ export const getMembersList = createServerFn({ method: 'GET' })
 
     const filterExpression = conditions.join(' && ')
 
-    console.log(filterExpression)
-
     const resultList: ListResult<MemberListItem> = await pb
       .collection('members')
       .getList(data.page, data.perPage, {
