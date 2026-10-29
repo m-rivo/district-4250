@@ -16,7 +16,7 @@ interface Props {
   value: string[]
   setValue: (value: string[]) => void
   placeholder: string
-  isLoading: boolean
+  isLoading?: boolean
 }
 
 export function ComboboxMultiple({

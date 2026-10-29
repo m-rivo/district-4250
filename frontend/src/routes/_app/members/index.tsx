@@ -13,7 +13,7 @@ import { Button } from '#/components/ui/button'
 import { SelectIsActive } from '#/components/SelectIsActive'
 import { CardContent } from '#/components/ui/card'
 import { CircleXIcon } from 'lucide-react'
-import { getClubsList } from '#/functions/club.functions'
+import { getFullClubsList } from '#/functions/club.functions'
 import { ComboboxMultipleGroupedClubs } from '#/components/ComboboxMultipleGroupedClubs'
 import { getRoleList } from '#/functions/role.functions'
 
@@ -65,7 +65,7 @@ function MembersPage() {
 
   const { data: clubList = [], isPending: isLoadingClubs } = useQuery({
     queryKey: ['clubs'],
-    queryFn: () => getClubsList(),
+    queryFn: () => getFullClubsList(),
   })
 
   const { data: roleList = [], isPending: isLoadingRoles } = useQuery({
@@ -163,6 +163,7 @@ function MembersPage() {
           page={page}
           perPage={perPage}
           totalPages={data?.totalPages ?? 0}
+          totalItems={data?.totalItems ?? 0}
           onPageChange={setPage}
           onPerPageChange={handlePerPageChange}
         />

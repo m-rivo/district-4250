@@ -18,6 +18,7 @@ interface DataTablePaginationProps {
   page: number
   perPage: number
   totalPages: number
+  totalItems: number
   onPageChange: (page: number) => void
   onPerPageChange: (perPage: number) => void
 }
@@ -27,6 +28,7 @@ export function DataTablePagination({
   page,
   perPage,
   totalPages,
+  totalItems,
   onPageChange,
   onPerPageChange,
 }: DataTablePaginationProps) {
@@ -35,6 +37,9 @@ export function DataTablePagination({
   return (
     <div className="flex items-center justify-end p-2">
       <div className="flex items-center flex-wrap space-x-6 lg:space-x-8">
+        <div className="flex w-25 items-center justify-center text-sm font-medium">
+          Total {totalItems}
+        </div>
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
           <Select

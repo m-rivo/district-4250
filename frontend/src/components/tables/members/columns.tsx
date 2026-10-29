@@ -5,8 +5,9 @@ import { Link } from '@tanstack/react-router'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { ArrowUpDown } from 'lucide-react'
+import type { features } from '#/components/ui/data-table/data-table-features'
 
-const columnHelper = createColumnHelper<MemberListItem>()
+const columnHelper = createColumnHelper<typeof features, MemberListItem>()
 
 export const columns = columnHelper.columns([
   columnHelper.accessor(
@@ -15,7 +16,7 @@ export const columns = columnHelper.columns([
       id: 'name',
       header: 'Name',
       cell: ({ row }) => {
-        const member = row.original as MemberListItem
+        const member = row.original
         const fullName = `${member.first_name} ${member.first_surname}`
 
         return (
@@ -60,7 +61,7 @@ export const columns = columnHelper.columns([
         )
       },
       cell: ({ row }) => {
-        const member = row.original as MemberListItem
+        const member = row.original
         const club = member.expand?.club
 
         if (!club) return 'No club'
@@ -82,7 +83,7 @@ export const columns = columnHelper.columns([
     id: 'roles',
     header: 'Roles',
     cell: ({ row }) => {
-      const member = row.original as MemberListItem
+      const member = row.original
       const roles = member.expand?.roles ?? []
 
       if (roles.length === 0) return 'Guest'
