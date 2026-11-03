@@ -1,6 +1,6 @@
 import { m } from '#/paraglide/messages'
 import { createFileRoute } from '@tanstack/react-router'
-import { getMembersList } from '#/functions/members/members.functions'
+import { getMembersList } from '#/functions/member.functions'
 import { useQuery } from '@tanstack/react-query'
 import { DataTable } from '#/components/ui/data-table/data-table'
 import { columns } from '#/components/tables/members/columns'

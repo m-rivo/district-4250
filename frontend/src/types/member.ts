@@ -38,3 +38,21 @@ export interface MemberListItem {
 
   profile_picture_url?: string | null
 }
+
+export interface MemberProfile {
+  id: string
+  first_name: string
+  second_name: string
+  first_surname: string
+  second_surname: string
+  profile_picture?: string | null
+  is_active: boolean
+  birth_date: string
+  member_since: string
+  profession: string
+  biography: string
+  expand?: {
+    club?: Club
+    roles?: Role[]
+  }
+}

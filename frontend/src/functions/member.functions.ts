@@ -1,9 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
-import type { MemberListItem } from '#/types/member'
+import type { MemberListItem, MemberProfile } from '#/types/member'
 import type { ListResult } from 'pocketbase'
 import { paginationSchema } from '#/lib/schemas/pagination'
 import { z } from 'zod'
+import { UpdateMemberSchema } from '#/lib/schemas/member.schemas'
+
+// FIXME: add try catch ??
 
 export const membersListSchema = paginationSchema.extend({
   search: z.string().default(''),
@@ -80,4 +83,50 @@ export const getMembersList = createServerFn({ method: 'GET' })
           : null,
       })),
     }
+  })
+
+export const getOneMemberSchema = z.object({
+  id: z.string().min(1, 'Member ID is required'),
+})
+
+export const getOneMember = createServerFn({ method: 'GET' })
+  .validator(getOneMemberSchema)
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+
+    const { id } = data
+
+    const member: MemberProfile = await pb.collection('members').getOne(id, {
+      fields:
+        'id,first_name,first_surname,profile_picture,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name,birth_date,member_since,is_active,profession,biography',
+      expand: 'club,roles',
+    })
+
+    return {
+      ...member,
+      profile_picture: member.profile_picture
+        ? `${pb.baseURL}/api/files/members/${member.id}/${encodeURIComponent(member.profile_picture)}`
+        : null,
+    }
+  })
+
+export const updateMember = createServerFn({ method: 'POST' })
+  .validator(UpdateMemberSchema)
+  .handler(async ({ data }) => {
+    const { id, first_name, first_surname, birth_date, profession, biography } =
+      data
+
+    const pb = createServerPocketBase()
+
+    const result = await pb.collection('Members').update(id, {
+      first_name,
+      first_surname,
+      birth_date,
+      profession,
+      biography,
+    })
+
+    console.log(result)
+
+    return result
   })
