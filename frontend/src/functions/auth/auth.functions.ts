@@ -171,8 +171,8 @@ export const signup = createServerFn({ method: 'POST' })
     const member = await pb.collection('members').create({
       user: user.id,
       first_name: data.first_name,
-      first_surname: data.first_surname,
-      is_active: true,
+      last_name: data.last_name,
+      membership_status: 'guest',
     })
     console.log('[signup] Member created:', member.id)
 

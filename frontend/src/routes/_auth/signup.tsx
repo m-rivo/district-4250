@@ -40,7 +40,7 @@ function SignupPage() {
         password: value.password,
         passwordConfirm: value.confirmPassword,
         first_name: value.name.trim(),
-        first_surname: value.lastName.trim(),
+        last_name: value.lastName.trim(),
       }
 
       setSuccess(false)

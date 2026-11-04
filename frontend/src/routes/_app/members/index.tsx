@@ -10,12 +10,13 @@ import { DataTablePagination } from '#/components/ui/data-table/data-table-pagin
 import { useDebounce } from '#/hooks/use-debounce'
 import { ComboboxMultiple } from '#/components/ComboboxMultiple'
 import { Button } from '#/components/ui/button'
-import { SelectIsActive } from '#/components/SelectIsActive'
+import { SelectMembershipStatus } from '#/components/SelectMembershipStatus'
 import { CardContent } from '#/components/ui/card'
 import { CircleXIcon } from 'lucide-react'
 import { getFullClubsList } from '#/functions/club.functions'
 import { ComboboxMultipleGroupedClubs } from '#/components/ComboboxMultipleGroupedClubs'
 import { getRoleList } from '#/functions/role.functions'
+import type { MembershipStatus } from '#/types/member'
 
 export const Route = createFileRoute('/_app/members/')({
   component: MembersPage,
@@ -27,7 +28,7 @@ function MembersPage() {
   const [search, setSearch] = useState<string>('')
   const [clubIds, setClubIds] = useState<string[]>([])
   const [roleIds, setRoleIds] = useState<string[]>([])
-  const [isActive, setIsActive] = useState<boolean | null>(null)
+  const [status, setStatus] = useState<MembershipStatus | null>(null)
 
   const debouncedSearch = useDebounce(search, 300)
 
@@ -42,13 +43,20 @@ function MembersPage() {
     setSearch('')
     setClubIds([])
     setRoleIds([])
-    setIsActive(null)
+    setStatus(null)
   }
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: [
       'members',
-      { page, perPage, search: debouncedSearch, clubIds, roleIds, isActive },
+      {
+        page,
+        perPage,
+        search: debouncedSearch,
+        clubIds,
+        roleIds,
+        membership_status: status,
+      },
     ],
     queryFn: () =>
       getMembersList({
@@ -58,7 +66,7 @@ function MembersPage() {
           search: debouncedSearch,
           clubIds,
           roleIds,
-          isActive,
+          membership_status: status,
         },
       }),
   })
@@ -132,10 +140,10 @@ function MembersPage() {
             />
           </div>
           <div>
-            <SelectIsActive
-              value={isActive}
+            <SelectMembershipStatus
+              value={status}
               setValue={(value) => {
-                setIsActive(value)
+                setStatus(value)
                 setPage(1)
               }}
             />

@@ -41,7 +41,7 @@ export default function EditMemberDialog({ data }: { data: MemberProfile }) {
   const form = useForm({
     defaultValues: {
       first_name: data.first_name,
-      first_surname: data.first_surname,
+      last_name: data.last_name,
       birth_date: data.birth_date.slice(0, 10),
       profession: data.profession || '',
       biography: data.biography || '',
@@ -144,7 +144,7 @@ export default function EditMemberDialog({ data }: { data: MemberProfile }) {
                   )
                 }}
               </form.Field>
-              <form.Field name="first_surname">
+              <form.Field name="last_name">
                 {(field) => {
                   const errors = field.state.meta.errors
 
@@ -157,7 +157,7 @@ export default function EditMemberDialog({ data }: { data: MemberProfile }) {
                         id={field.name}
                         name={field.name}
                         type="text"
-                        autoComplete="surname"
+                        autoComplete="last_name"
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}

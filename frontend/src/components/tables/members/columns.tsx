@@ -11,13 +11,13 @@ const columnHelper = createColumnHelper<typeof features, MemberListItem>()
 
 export const columns = columnHelper.columns([
   columnHelper.accessor(
-    (row: MemberListItem) => `${row.first_name} ${row.first_surname}`,
+    (row: MemberListItem) => `${row.first_name} ${row.last_name}`,
     {
       id: 'name',
       header: 'Name',
       cell: ({ row }) => {
         const member = row.original
-        const fullName = `${member.first_name} ${member.first_surname}`
+        const fullName = `${member.first_name} ${member.last_name}`
 
         return (
           <div className="flex items-center gap-2">
@@ -28,7 +28,7 @@ export const columns = columnHelper.columns([
               />
               <AvatarFallback>
                 {member.first_name[0]}
-                {member.first_surname[0]}
+                {member.last_name[0]}
               </AvatarFallback>
             </Avatar>
 
@@ -86,8 +86,6 @@ export const columns = columnHelper.columns([
       const member = row.original
       const roles = member.expand?.roles ?? []
 
-      if (roles.length === 0) return 'Guest'
-
       return (
         <div className="flex gap-1">
           {roles.map((role) => (
@@ -103,19 +101,14 @@ export const columns = columnHelper.columns([
     },
   }),
 
-  columnHelper.accessor('is_active', {
+  columnHelper.accessor('membership_status', {
     header: 'Status',
-    cell: ({ getValue }) =>
-      getValue() ? (
-        <Badge variant="green">Active</Badge>
-      ) : (
-        <Badge variant="secondary">Inactive</Badge>
-      ),
+    cell: ({ getValue }) => <Badge variant="green">{getValue()}</Badge>,
   }),
 
   columnHelper.accessor(
     (row: MemberListItem) =>
-      `${row.first_name} ${row.first_surname} ${row.expand?.club?.name ?? ''}`,
+      `${row.first_name} ${row.last_name} ${row.expand?.club?.name ?? ''}`,
     {
       id: 'search',
       enableHiding: true,

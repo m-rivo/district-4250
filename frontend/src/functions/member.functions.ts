@@ -2,23 +2,18 @@ import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
 import type { MemberListItem, MemberProfile } from '#/types/member'
 import type { ListResult } from 'pocketbase'
-import { paginationSchema } from '#/lib/schemas/pagination'
 import { z } from 'zod'
-import { UpdateMemberSchema } from '#/lib/schemas/member.schemas'
+import {
+  UpdateMemberSchema,
+  MembersListSchema,
+} from '#/lib/schemas/member.schemas'
 
 // FIXME: add try catch ??
 
 const COLLECTION = 'members'
 
-export const membersListSchema = paginationSchema.extend({
-  search: z.string().default(''),
-  clubIds: z.array(z.string()).default([]),
-  roleIds: z.array(z.string()).default([]),
-  isActive: z.boolean().nullable().default(null),
-})
-
 export const getMembersList = createServerFn({ method: 'GET' })
-  .validator(membersListSchema)
+  .validator(MembersListSchema)
   .handler(async ({ data }) => {
     const pb = createServerPocketBase()
 
@@ -31,7 +26,7 @@ export const getMembersList = createServerFn({ method: 'GET' })
     searchTerms.forEach((term, index) => {
       const key = `search${index}`
 
-      conditions.push(`(first_name ~ {:${key}} || first_surname ~ {:${key}})`)
+      conditions.push(`(first_name ~ {:${key}} || last_name ~ {:${key}})`)
 
       params[key] = term
     })
@@ -58,9 +53,9 @@ export const getMembersList = createServerFn({ method: 'GET' })
       conditions.push(`(${roleConditions.join(' || ')})`)
     }
 
-    // Active status
-    if (data.isActive !== null) {
-      conditions.push(`is_active = ${data.isActive}`)
+    // Membership status
+    if (data.membership_status !== null) {
+      conditions.push(`membership_status = '${data.membership_status}'`)
     }
 
     const filterExpression = conditions.join(' && ')
@@ -69,7 +64,7 @@ export const getMembersList = createServerFn({ method: 'GET' })
       .collection(COLLECTION)
       .getList(data.page, data.perPage, {
         fields:
-          'id,first_name,first_surname,is_active,profile_picture,roles,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name',
+          'id,first_name,last_name,membership_status,profile_picture,roles,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name',
         expand: 'club,roles',
         ...(filterExpression
           ? { filter: pb.filter(filterExpression, params) }
@@ -100,7 +95,7 @@ export const getOneMember = createServerFn({ method: 'GET' })
 
     const member: MemberProfile = await pb.collection(COLLECTION).getOne(id, {
       fields:
-        'id,first_name,first_surname,profile_picture,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name,birth_date,member_since,is_active,profession,biography',
+        'id,first_name,last_name,profile_picture,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name,birth_date,member_since,membership_status,profession,biography',
       expand: 'club,roles',
     })
 
@@ -115,14 +110,14 @@ export const getOneMember = createServerFn({ method: 'GET' })
 export const updateMember = createServerFn({ method: 'POST' })
   .validator(UpdateMemberSchema)
   .handler(async ({ data }) => {
-    const { id, first_name, first_surname, birth_date, profession, biography } =
+    const { id, first_name, last_name, birth_date, profession, biography } =
       data
 
     const pb = createServerPocketBase()
 
     const result = await pb.collection(COLLECTION).update(id, {
       first_name,
-      first_surname,
+      last_name,
       birth_date,
       profession,
       biography,

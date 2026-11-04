@@ -47,7 +47,7 @@ export const SignupServerSchema = z
     password: z.string().min(8).max(128),
     passwordConfirm: z.string().min(1),
     first_name: z.string().trim().min(2).max(50),
-    first_surname: z.string().trim().min(2).max(50),
+    last_name: z.string().trim().min(2).max(50),
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: 'Passwords do not match',

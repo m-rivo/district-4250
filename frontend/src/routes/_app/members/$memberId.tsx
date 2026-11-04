@@ -24,11 +24,7 @@ import EditMemberDialog from './dialogs/EditMemberDialog'
 import { ProfilePictureDialog } from '#/components/members/ProfilePictureDialog'
 import { toast } from 'sonner'
 
-// FIXME: cambiar is_active por status
 // FIXME: bug de calendario de birth date
-// FIXME: eliminar seconda_name y second_surname y cambiar first_surname por last_name
-// FIXME: usa avater con thumbnail de pocketbase en la tabla members
-// TODO: skeletons
 // TODO: (refactor) cambiar ubicación de schemas y archivos de member
 export const Route = createFileRoute('/_app/members/$memberId')({
   component: MemberPage,
@@ -43,7 +39,7 @@ function MemberPage() {
     queryFn: () => getOneMember({ data: { id: memberId } }),
   })
 
-  const fullName = `${data?.first_name} ${data?.first_surname}`
+  const fullName = `${data?.first_name} ${data?.last_name}`
   const cleanBiography = DOMPurify.sanitize(data?.biography ?? '')
 
   if (isError) {
@@ -92,7 +88,7 @@ function MemberPage() {
               />
               <AvatarFallback className="rounded-xl text-2xl">
                 {data.first_name[0]}
-                {data.first_surname[0]}
+                {data.last_name[0]}
               </AvatarFallback>
             </Avatar>
 
@@ -102,9 +98,7 @@ function MemberPage() {
                   {fullName}
                 </h1>
 
-                <Badge variant={data.is_active ? 'green' : 'secondary'}>
-                  {data.is_active ? 'Active' : 'Inactive'}
-                </Badge>
+                <Badge variant="green">{data.membership_status}</Badge>
               </div>
 
               <p className="flex items-center gap-2 text-sm text-muted-foreground">
