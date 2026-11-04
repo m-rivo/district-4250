@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { getOneMember } from '#/functions/member.functions'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  getOneMember,
+  uploadProfilePicture,
+} from '#/functions/member.functions'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import {
   BriefcaseBusinessIcon,
@@ -18,15 +21,22 @@ import DOMPurify from 'dompurify'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Breadcrumbs } from '#/components/Bradcrumbs'
 import EditMemberDialog from './dialogs/EditMemberDialog'
+import { ProfilePictureDialog } from '#/components/members/ProfilePictureDialog'
+import { toast } from 'sonner'
 
 // FIXME: cambiar is_active por status
+// FIXME: bug de calendario de birth date
 // FIXME: eliminar seconda_name y second_surname y cambiar first_surname por last_name
+// FIXME: usa avater con thumbnail de pocketbase en la tabla members
+// TODO: skeletons
+// TODO: (refactor) cambiar ubicación de schemas y archivos de member
 export const Route = createFileRoute('/_app/members/$memberId')({
   component: MemberPage,
 })
 
 function MemberPage() {
   const { memberId } = Route.useParams()
+  const queryClient = useQueryClient()
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ['member', { id: memberId }],
@@ -112,6 +122,17 @@ function MemberPage() {
             </div>
 
             <EditMemberDialog data={data} />
+            <ProfilePictureDialog
+              onSave={async (file) => {
+                await uploadProfilePicture(memberId, file)
+
+                await queryClient.invalidateQueries({
+                  queryKey: ['member', { id: memberId }],
+                })
+
+                toast.success('Profile picture updated successfully.')
+              }}
+            />
           </div>
 
           {/* Biography */}

@@ -8,6 +8,8 @@ import { UpdateMemberSchema } from '#/lib/schemas/member.schemas'
 
 // FIXME: add try catch ??
 
+const COLLECTION = 'members'
+
 export const membersListSchema = paginationSchema.extend({
   search: z.string().default(''),
   clubIds: z.array(z.string()).default([]),
@@ -64,7 +66,7 @@ export const getMembersList = createServerFn({ method: 'GET' })
     const filterExpression = conditions.join(' && ')
 
     const resultList: ListResult<MemberListItem> = await pb
-      .collection('members')
+      .collection(COLLECTION)
       .getList(data.page, data.perPage, {
         fields:
           'id,first_name,first_surname,is_active,profile_picture,roles,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name',
@@ -85,18 +87,18 @@ export const getMembersList = createServerFn({ method: 'GET' })
     }
   })
 
-export const getOneMemberSchema = z.object({
-  id: z.string().min(1, 'Member ID is required'),
-})
-
 export const getOneMember = createServerFn({ method: 'GET' })
-  .validator(getOneMemberSchema)
+  .validator(
+    z.object({
+      id: z.string().min(1, 'Member ID is required'),
+    }),
+  )
   .handler(async ({ data }) => {
     const pb = createServerPocketBase()
 
     const { id } = data
 
-    const member: MemberProfile = await pb.collection('members').getOne(id, {
+    const member: MemberProfile = await pb.collection(COLLECTION).getOne(id, {
       fields:
         'id,first_name,first_surname,profile_picture,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name,birth_date,member_since,is_active,profession,biography',
       expand: 'club,roles',
@@ -118,7 +120,7 @@ export const updateMember = createServerFn({ method: 'POST' })
 
     const pb = createServerPocketBase()
 
-    const result = await pb.collection('Members').update(id, {
+    const result = await pb.collection(COLLECTION).update(id, {
       first_name,
       first_surname,
       birth_date,
@@ -130,3 +132,40 @@ export const updateMember = createServerFn({ method: 'POST' })
 
     return result
   })
+
+/* export const updateProfilePicture = createServerFn({
+  method: 'POST',
+})
+  .validator(
+    z.object({
+      id: z.string().min(1, 'Member ID is required'),
+      profile_picture: z.instanceof(File),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+
+    return await pb.collection(COLLECTION).update(data.id, {
+      profile_picture: data.profile_picture,
+    })
+  }) */
+
+export async function uploadProfilePicture(id: string, file: File) {
+  const formData = new FormData()
+
+  formData.append('id', id)
+  formData.append('profile_picture', file)
+
+  const response = await fetch('/members/profile-picture', {
+    method: 'POST',
+    body: formData,
+  })
+
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(result.error ?? 'Upload failed')
+  }
+
+  return result
+}
