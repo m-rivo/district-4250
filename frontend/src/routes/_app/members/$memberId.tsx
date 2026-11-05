@@ -20,12 +20,11 @@ import parse from 'html-react-parser'
 import DOMPurify from 'dompurify'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Breadcrumbs } from '#/components/Bradcrumbs'
-import EditMemberDialog from './dialogs/EditMemberDialog'
+import EditMemberDialog from '#/components/members/EditMemberDialog'
 import { ProfilePictureDialog } from '#/components/members/ProfilePictureDialog'
 import { toast } from 'sonner'
 
 // FIXME: bug de calendario de birth date
-// TODO: (refactor) cambiar ubicación de schemas y archivos de member
 export const Route = createFileRoute('/_app/members/$memberId')({
   component: MemberPage,
 })

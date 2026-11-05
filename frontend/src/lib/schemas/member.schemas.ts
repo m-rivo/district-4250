@@ -1,4 +1,4 @@
-import { paginationSchema } from './pagination'
+import { paginationSchema } from './pagination.schema'
 import z from 'zod'
 
 export const MEMBERSHIP_STATUSES = [

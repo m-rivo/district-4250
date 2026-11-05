@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
 import type { ClubListItem } from '#/types/club'
 import type { ListResult } from 'pocketbase'
-import { paginationSchema } from '#/lib/schemas/pagination'
+import { paginationSchema } from '#/lib/schemas/pagination.schema'
 import z from 'zod'
 
 export const getFullClubsList = createServerFn({ method: 'GET' }).handler(

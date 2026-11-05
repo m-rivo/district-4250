@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
 import type { ListResult } from 'pocketbase'
-import { paginationSchema } from '#/lib/schemas/pagination'
+import { paginationSchema } from '#/lib/schemas/pagination.schema'
 import type { ProjectListItem } from '#/types/project'
 import z from 'zod'
 
