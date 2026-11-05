@@ -8,8 +8,6 @@ import {
   MembersListSchema,
 } from '#/lib/schemas/member.schemas'
 
-// FIXME: add try catch ??
-
 const COLLECTION = 'members'
 
 export const getMembersList = createServerFn({ method: 'GET' })
@@ -76,7 +74,7 @@ export const getMembersList = createServerFn({ method: 'GET' })
       items: resultList.items.map((member) => ({
         ...member,
         profile_picture_url: member.profile_picture
-          ? `${pb.baseURL}/api/files/members/${member.id}/${encodeURIComponent(member.profile_picture)}`
+          ? `${pb.baseURL}/api/files/members/${member.id}/${encodeURIComponent(member.profile_picture)}?thumb=100x100`
           : null,
       })),
     }
@@ -102,7 +100,7 @@ export const getOneMember = createServerFn({ method: 'GET' })
     return {
       ...member,
       profile_picture: member.profile_picture
-        ? `${pb.baseURL}/api/files/members/${member.id}/${encodeURIComponent(member.profile_picture)}`
+        ? `${pb.baseURL}/api/files/members/${member.id}/${encodeURIComponent(member.profile_picture)}?thumb=300x300`
         : null,
     }
   })
@@ -122,8 +120,6 @@ export const updateMember = createServerFn({ method: 'POST' })
       profession,
       biography,
     })
-
-    console.log(result)
 
     return result
   })
