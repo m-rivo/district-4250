@@ -1,9 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
-import type { ClubListItem } from '#/types/club'
+import type { ClubListItem, ClubProfile } from '#/types/club'
 import type { ListResult } from 'pocketbase'
 import { paginationSchema } from '#/lib/schemas/pagination.schema'
 import z from 'zod'
+
+const COLLECTION = 'clubs'
 
 export const getFullClubsList = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -57,8 +59,30 @@ export const getPaginatedClubsList = createServerFn({ method: 'GET' })
       conditions.length > 0 ? pb.filter(conditions.join(' && '), params) : ''
 
     const resultList: ListResult<ClubListItem> = await pb
-      .collection('clubs')
+      .collection(COLLECTION)
       .getList(page, perPage, { fields: 'id,name,country', filter })
 
     return resultList
+  })
+
+export const getOneClub = createServerFn({ method: 'GET' })
+  .validator(z.object({ id: z.string().min(1, 'Club ID is required.') }))
+  .handler(async ({ data }) => {
+    const { id } = data
+
+    const pb = createServerPocketBase()
+
+    const club: ClubProfile = await pb.collection(COLLECTION).getOne(id, {
+      fields:
+        'id,club_id,name,country,region,location,instagram,tiktok,foundation_date,logo,description,status,facebook,sponsor_club,x_twitter',
+    })
+
+    console.log(club)
+
+    return {
+      ...club,
+      logo: club.logo
+        ? `${pb.baseURL}/api/files/clubs/${club.id}/${encodeURIComponent(club.logo)}?thumb=300x300`
+        : null,
+    }
   })

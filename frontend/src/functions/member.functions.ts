@@ -13,13 +13,15 @@ const COLLECTION = 'members'
 export const getMembersList = createServerFn({ method: 'GET' })
   .validator(MembersListSchema)
   .handler(async ({ data }) => {
+    const { page, perPage, search, clubIds, roleIds, membership_status } = data
+
     const pb = createServerPocketBase()
 
     const conditions: string[] = []
     const params: Record<string, string> = {}
 
     // Names
-    const searchTerms = data.search.trim().split(/\s+/).filter(Boolean)
+    const searchTerms = search.trim().split(/\s+/).filter(Boolean)
 
     searchTerms.forEach((term, index) => {
       const key = `search${index}`
@@ -30,8 +32,8 @@ export const getMembersList = createServerFn({ method: 'GET' })
     })
 
     // Clubs
-    if (data.clubIds.length > 0) {
-      const clubConditions = data.clubIds.map((id, index) => {
+    if (clubIds.length > 0) {
+      const clubConditions = clubIds.map((id, index) => {
         const key = `club${index}`
         params[key] = id
         return `club = {:${key}}`
@@ -41,8 +43,8 @@ export const getMembersList = createServerFn({ method: 'GET' })
     }
 
     // Roles
-    if (data.roleIds.length > 0) {
-      const roleConditions = data.roleIds.map((id, index) => {
+    if (roleIds.length > 0) {
+      const roleConditions = roleIds.map((id, index) => {
         const key = `role${index}`
         params[key] = id
         return `roles ~ {:${key}}`
@@ -52,15 +54,15 @@ export const getMembersList = createServerFn({ method: 'GET' })
     }
 
     // Membership status
-    if (data.membership_status !== null) {
-      conditions.push(`membership_status = '${data.membership_status}'`)
+    if (membership_status !== null) {
+      conditions.push(`membership_status = '${membership_status}'`)
     }
 
     const filterExpression = conditions.join(' && ')
 
     const resultList: ListResult<MemberListItem> = await pb
       .collection(COLLECTION)
-      .getList(data.page, data.perPage, {
+      .getList(page, perPage, {
         fields:
           'id,first_name,last_name,membership_status,profile_picture,roles,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name',
         expand: 'club,roles',
@@ -123,23 +125,6 @@ export const updateMember = createServerFn({ method: 'POST' })
 
     return result
   })
-
-/* export const updateProfilePicture = createServerFn({
-  method: 'POST',
-})
-  .validator(
-    z.object({
-      id: z.string().min(1, 'Member ID is required'),
-      profile_picture: z.instanceof(File),
-    }),
-  )
-  .handler(async ({ data }) => {
-    const pb = createServerPocketBase()
-
-    return await pb.collection(COLLECTION).update(data.id, {
-      profile_picture: data.profile_picture,
-    })
-  }) */
 
 export async function uploadProfilePicture(id: string, file: File) {
   const formData = new FormData()
