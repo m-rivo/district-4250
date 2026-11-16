@@ -22,11 +22,7 @@ export const UpdateMemberSchema = UpdateMemberFormSchema.extend({
   id: z.string().min(1, 'Member ID is required'),
 })
 
-export type UpdateMemberSchema = z.infer<typeof UpdateMemberFormSchema>
-
 export const MembershipStatusSchema = z.enum(MEMBERSHIP_STATUSES)
-
-export type MembershipStatus = z.infer<typeof MembershipStatusSchema>
 
 export const MembersListSchema = paginationSchema.extend({
   search: z.string().default(''),

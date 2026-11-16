@@ -34,7 +34,8 @@ export default function EditMemberDialog({ data }: { data: MemberProfile }) {
   const [date, setDate] = useState<Date | undefined>(
     data.birth_date ? new Date(data.birth_date) : undefined,
   )
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean>(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
 
   const queryClient = useQueryClient()
 
@@ -186,7 +187,10 @@ export default function EditMemberDialog({ data }: { data: MemberProfile }) {
                         Birthdate <span className="text-destructive">*</span>
                       </FieldLabel>
 
-                      <Popover>
+                      <Popover
+                        open={calendarOpen}
+                        onOpenChange={setCalendarOpen}
+                      >
                         <PopoverTrigger asChild>
                           <Button
                             id={field.name}
@@ -205,9 +209,11 @@ export default function EditMemberDialog({ data }: { data: MemberProfile }) {
                             mode="single"
                             selected={date}
                             defaultMonth={date}
+                            captionLayout="dropdown"
                             onSelect={(selected) => {
                               if (selected) {
                                 setDate(selected)
+                                setCalendarOpen(false)
                                 field.handleChange(
                                   format(selected, 'yyyy-MM-dd'),
                                 )

@@ -6,12 +6,12 @@ import type { MembershipStatus } from '#/types/member'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { CardContent } from '../ui/card'
-import { CircleXIcon } from 'lucide-react'
+import { CircleXIcon, FunnelXIcon } from 'lucide-react'
 import { DataTablePagination } from '../ui/data-table/data-table-pagination'
 import { DataTable } from '../ui/data-table/data-table'
 import { columns } from '../table-columns/member-columns'
 import { Button } from '../ui/button'
-import { SelectMembershipStatus } from '../SelectMembershipStatus'
+import { SelectMembershipStatus } from './SelectMembershipStatus'
 import { ComboboxMultiple } from '../ComboboxMultiple'
 import { ComboboxMultipleGroupedClubs } from '../ComboboxMultipleGroupedClubs'
 import { Input } from '../ui/input'
@@ -156,11 +156,11 @@ export default function MembersListTable({
         </div>
         <div>
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={handleClearFilters}
             className="w-full"
           >
-            Clear all filters
+            <FunnelXIcon /> Clear filters
           </Button>
         </div>
       </div>

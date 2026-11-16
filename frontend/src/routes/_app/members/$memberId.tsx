@@ -7,11 +7,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import {
   BriefcaseBusinessIcon,
-  SettingsIcon,
   CakeIcon,
   CalendarCheckIcon,
   CircleXIcon,
   UserRoundIcon,
+  CogIcon,
 } from 'lucide-react'
 import { Skeleton } from '#/components/ui/skeleton'
 import { Badge } from '#/components/ui/badge'
@@ -21,7 +21,7 @@ import DOMPurify from 'dompurify'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Breadcrumbs } from '#/components/Bradcrumbs'
 import EditMemberDialog from '#/components/members/EditMemberDialog'
-import { ProfilePictureDialog } from '#/components/members/ProfilePictureDialog'
+import { ImageUpdateDialog } from '#/components/ImageUpdateDialog'
 import { toast } from 'sonner'
 
 // FIXME: bug de calendario de birth date
@@ -100,8 +100,8 @@ function MemberPage() {
                 <Badge variant="green">{data.membership_status}</Badge>
               </div>
 
-              <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                <SettingsIcon className="size-4" />
+              <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                <CogIcon className="size-4 text-yellow-500" />
                 {data.expand?.club?.name ?? 'No club assigned'}
               </p>
 
@@ -115,7 +115,8 @@ function MemberPage() {
             </div>
 
             <EditMemberDialog data={data} />
-            <ProfilePictureDialog
+            <ImageUpdateDialog
+              title="profile picture"
               onSave={async (file) => {
                 await uploadProfilePicture(memberId, file)
 
@@ -155,7 +156,7 @@ function MemberPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <SettingsIcon className="size-5 text-primary" />
+                  <CogIcon className="size-5 text-primary" />
                   Rotaract club
                 </CardTitle>
               </CardHeader>

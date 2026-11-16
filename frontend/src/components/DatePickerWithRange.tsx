@@ -22,7 +22,7 @@ export function DatePickerWithRange({
   return (
     <Field className="w-full">
       <Popover>
-        <PopoverTrigger id="date-picker-range" render={undefined}>
+        <PopoverTrigger asChild id="date-picker-range">
           <Button
             variant="outline"
             className="justify-start px-2.5 font-normal"
