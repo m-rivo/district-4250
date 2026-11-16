@@ -12,6 +12,8 @@ import {
   ImageIcon,
   MapPinIcon,
   PencilIcon,
+  UserCog2Icon,
+  UserCogIcon,
   UsersIcon,
 } from 'lucide-react'
 import { getOneClub } from '#/functions/club.functions'
@@ -30,8 +32,8 @@ import MembersListTable from '#/components/members/MembersListTable'
 import { useState } from 'react'
 import { m } from '#/paraglide/messages'
 import ProjectsListTable from '#/components/projects/ProjectsListTable'
+import ClubFormDialog from '#/components/clubs/ClubFormDialog'
 
-// TODO: dialog con form para editar club
 // TODO: update de imagen de logo
 export const Route = createFileRoute('/_app/clubs/$clubId')({
   component: ClubPage,
@@ -158,10 +160,7 @@ function ClubPage() {
               </p>
             </div>
 
-            <Button variant="outline">
-              <PencilIcon />
-              Edit
-            </Button>
+            <ClubFormDialog data={club} />
             <Button variant="outline">
               <ImageIcon />
               Picture
@@ -188,6 +187,22 @@ function ClubPage() {
               )}
             </CardContent>
           </Card>
+          {/* Junta Directiva */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserCog2Icon className="size-5 text-primary" />
+                Junta Directiva
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <p>President: Peter Parker</p>
+              <p>Secretary: María</p>
+              <p>Tesorero: Luis</p>
+            </CardContent>
+          </Card>
+          {/* Location */}
           {club.location && (
             <Card>
               <CardHeader>

@@ -2,8 +2,8 @@ import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
 import type { ClubListItem, ClubProfile } from '#/types/club'
 import type { ListResult } from 'pocketbase'
-import { paginationSchema } from '#/lib/schemas/pagination.schema'
 import z from 'zod'
+import { ClubsListSchema, UpdateClubSchema } from '#/lib/schemas/club.schemas'
 
 const COLLECTION = 'clubs'
 
@@ -19,13 +19,8 @@ export const getFullClubsList = createServerFn({ method: 'GET' }).handler(
   },
 )
 
-export const clubsListSchema = paginationSchema.extend({
-  search: z.string().default(''),
-  countries: z.array(z.string()).default([]),
-})
-
 export const getPaginatedClubsList = createServerFn({ method: 'GET' })
-  .validator(clubsListSchema)
+  .validator(ClubsListSchema)
   .handler(async ({ data }) => {
     const pb = createServerPocketBase()
     const { page, perPage, search, countries } = data
@@ -77,12 +72,51 @@ export const getOneClub = createServerFn({ method: 'GET' })
         'id,club_id,name,country,region,location,instagram,tiktok,foundation_date,logo,description,status,facebook,sponsor_club,x_twitter',
     })
 
-    console.log(club)
-
     return {
       ...club,
       logo: club.logo
         ? `${pb.baseURL}/api/files/clubs/${club.id}/${encodeURIComponent(club.logo)}?thumb=300x300`
         : null,
     }
+  })
+
+export const updateClub = createServerFn({ method: 'POST' })
+  .validator(UpdateClubSchema)
+  .handler(async ({ data }) => {
+    const {
+      id,
+      club_id,
+      name,
+      country,
+      region,
+      location,
+      instagram,
+      tiktok,
+      foundation_date,
+      description,
+      status,
+      facebook,
+      sponsor_club,
+      x_twitter,
+    } = data
+
+    const pb = createServerPocketBase()
+
+    const result = await pb.collection(COLLECTION).update(id, {
+      club_id,
+      name,
+      country,
+      region,
+      location,
+      instagram,
+      tiktok,
+      foundation_date,
+      description,
+      status,
+      facebook,
+      sponsor_club,
+      x_twitter,
+    })
+
+    return result
   })

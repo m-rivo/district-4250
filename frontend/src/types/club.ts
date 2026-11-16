@@ -1,4 +1,7 @@
-export type Country = 'Honduras' | 'Belize' | 'Guatemala'
+import type { Country } from './country'
+import type { Region } from './region'
+
+export type ClubStatus = 'active' | 'inactive'
 
 export interface Club {
   id: string
@@ -16,15 +19,15 @@ export interface ClubProfile {
   club_id: string
   name: string
   country: Country
-  region: string
-  location?: string
+  region: Region
+  location: string
   instagram: string
   tiktok: string
   x_twitter: string
   facebook: string
   foundation_date: string
-  status: 'active' | 'inactive'
+  status: ClubStatus
   description: string
-  logo: string
+  logo?: string | null
   sponsor_club: string
 }
