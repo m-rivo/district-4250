@@ -120,3 +120,23 @@ export const updateClub = createServerFn({ method: 'POST' })
 
     return result
   })
+
+export async function uploadLogo(id: string, file: File) {
+  const formData = new FormData()
+
+  formData.append('id', id)
+  formData.append('logo', file)
+
+  const response = await fetch('/clubs/logo', {
+    method: 'POST',
+    body: formData,
+  })
+
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(result.error ?? 'Upload failed')
+  }
+
+  return result
+}

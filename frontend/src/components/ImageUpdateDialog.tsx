@@ -17,11 +17,12 @@ import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { getCroppedImage } from '#/lib/utils/crop-image'
 
-type Props = {
+type ImageUpdateDialogProps = {
   onSave: (file: File) => Promise<void>
+  title: string
 }
 
-export function ProfilePictureDialog({ onSave }: Props) {
+export function ImageUpdateDialog({ onSave, title }: ImageUpdateDialogProps) {
   const [open, setOpen] = useState(false)
   const [image, setImage] = useState<string>()
   const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -97,10 +98,8 @@ export function ProfilePictureDialog({ onSave }: Props) {
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit profile picture</DialogTitle>
-          <DialogDescription>
-            Select and adjust your profile picture.
-          </DialogDescription>
+          <DialogTitle>{`Edit ${title}`}</DialogTitle>
+          <DialogDescription>{`Select and adjust your ${title}.`}</DialogDescription>
         </DialogHeader>
 
         <Field>

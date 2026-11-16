@@ -22,6 +22,7 @@ import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as AppClubsIndexRouteImport } from './routes/_app/clubs/index'
 import { Route as AppClubsClubIdRouteImport } from './routes/_app/clubs/$clubId'
+import { Route as AppClubsLogoRouteImport } from './routes/_app/clubs/logo'
 import { Route as AppMembersIndexRouteImport } from './routes/_app/members/index'
 import { Route as AppMembersMemberIdRouteImport } from './routes/_app/members/$memberId'
 import { Route as AppMembersProfilePictureRouteImport } from './routes/_app/members/profile-picture'
@@ -92,6 +93,11 @@ const AppClubsClubIdRoute = AppClubsClubIdRouteImport.update({
   path: '/clubs/$clubId',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppClubsLogoRoute = AppClubsLogoRouteImport.update({
+  id: '/clubs/logo',
+  path: '/clubs/logo',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppMembersIndexRoute = AppMembersIndexRouteImport.update({
   id: '/members/',
   path: '/members/',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/clubs/$clubId': typeof AppClubsClubIdRoute
+  '/clubs/logo': typeof AppClubsLogoRoute
   '/members/$memberId': typeof AppMembersMemberIdRoute
   '/members/profile-picture': typeof AppMembersProfilePictureRoute
   '/projects/$projectId': typeof AppProjectsProjectIdRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/clubs/$clubId': typeof AppClubsClubIdRoute
+  '/clubs/logo': typeof AppClubsLogoRoute
   '/members/$memberId': typeof AppMembersMemberIdRoute
   '/members/profile-picture': typeof AppMembersProfilePictureRoute
   '/projects/$projectId': typeof AppProjectsProjectIdRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/_app/': typeof AppIndexRoute
   '/_app/clubs/$clubId': typeof AppClubsClubIdRoute
+  '/_app/clubs/logo': typeof AppClubsLogoRoute
   '/_app/members/$memberId': typeof AppMembersMemberIdRoute
   '/_app/members/profile-picture': typeof AppMembersProfilePictureRoute
   '/_app/projects/$projectId': typeof AppProjectsProjectIdRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/clubs/$clubId'
+    | '/clubs/logo'
     | '/members/$memberId'
     | '/members/profile-picture'
     | '/projects/$projectId'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/clubs/$clubId'
+    | '/clubs/logo'
     | '/members/$memberId'
     | '/members/profile-picture'
     | '/projects/$projectId'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/_app/'
     | '/_app/clubs/$clubId'
+    | '/_app/clubs/logo'
     | '/_app/members/$memberId'
     | '/_app/members/profile-picture'
     | '/_app/projects/$projectId'
@@ -335,6 +347,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppClubsClubIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/clubs/logo': {
+      id: '/_app/clubs/logo'
+      path: '/clubs/logo'
+      fullPath: '/clubs/logo'
+      preLoaderRoute: typeof AppClubsLogoRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/members/': {
       id: '/_app/members/'
       path: '/members'
@@ -377,6 +396,7 @@ interface AppRouteRouteChildren {
   AppProfileRoute: typeof AppProfileRoute
   AppIndexRoute: typeof AppIndexRoute
   AppClubsClubIdRoute: typeof AppClubsClubIdRoute
+  AppClubsLogoRoute: typeof AppClubsLogoRoute
   AppMembersMemberIdRoute: typeof AppMembersMemberIdRoute
   AppMembersProfilePictureRoute: typeof AppMembersProfilePictureRoute
   AppProjectsProjectIdRoute: typeof AppProjectsProjectIdRoute
@@ -389,6 +409,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppProfileRoute: AppProfileRoute,
   AppIndexRoute: AppIndexRoute,
   AppClubsClubIdRoute: AppClubsClubIdRoute,
+  AppClubsLogoRoute: AppClubsLogoRoute,
   AppMembersMemberIdRoute: AppMembersMemberIdRoute,
   AppMembersProfilePictureRoute: AppMembersProfilePictureRoute,
   AppProjectsProjectIdRoute: AppProjectsProjectIdRoute,

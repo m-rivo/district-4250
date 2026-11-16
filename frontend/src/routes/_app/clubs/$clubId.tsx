@@ -1,9 +1,6 @@
-import EditMemberDialog from '#/components/members/EditMemberDialog'
-import { ProfilePictureDialog } from '#/components/members/ProfilePictureDialog'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Badge } from '#/components/ui/badge'
-import { Button } from '#/components/ui/button'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   BookOpenIcon,
@@ -11,12 +8,10 @@ import {
   HandshakeIcon,
   ImageIcon,
   MapPinIcon,
-  PencilIcon,
   UserCog2Icon,
-  UserCogIcon,
   UsersIcon,
 } from 'lucide-react'
-import { getOneClub } from '#/functions/club.functions'
+import { getOneClub, uploadLogo } from '#/functions/club.functions'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import parse from 'html-react-parser'
 import DOMPurify from 'dompurify'
@@ -33,8 +28,9 @@ import { useState } from 'react'
 import { m } from '#/paraglide/messages'
 import ProjectsListTable from '#/components/projects/ProjectsListTable'
 import ClubFormDialog from '#/components/clubs/ClubFormDialog'
+import { toast } from 'sonner'
+import { ImageUpdateDialog } from '#/components/ImageUpdateDialog'
 
-// TODO: update de imagen de logo
 export const Route = createFileRoute('/_app/clubs/$clubId')({
   component: ClubPage,
 })
@@ -43,6 +39,7 @@ function ClubPage() {
   const { clubId } = Route.useParams()
 
   const [clubIds, setClubIds] = useState<string[]>([clubId])
+  const queryClient = useQueryClient()
 
   const {
     data: club,
@@ -161,10 +158,18 @@ function ClubPage() {
             </div>
 
             <ClubFormDialog data={club} />
-            <Button variant="outline">
-              <ImageIcon />
-              Picture
-            </Button>
+            <ImageUpdateDialog
+              title="club's logo"
+              onSave={async (file) => {
+                await uploadLogo(clubId, file)
+
+                await queryClient.invalidateQueries({
+                  queryKey: ['club', { id: clubId }],
+                })
+
+                toast.success('Logo updated successfully.')
+              }}
+            />
           </div>
           {/* Biography */}
           <Card>
