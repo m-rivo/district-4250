@@ -3,7 +3,11 @@ import { createServerPocketBase } from '#/lib/pocketbase/server'
 import type { ClubListItem, ClubProfile } from '#/types/club'
 import type { ListResult } from 'pocketbase'
 import z from 'zod'
-import { ClubsListSchema, UpdateClubSchema } from '#/lib/schemas/club.schemas'
+import {
+  ClubsListSchema,
+  UpdateClubSchema,
+  CreateClubSchema,
+} from '#/lib/schemas/club.schemas'
 
 const COLLECTION = 'clubs'
 
@@ -140,3 +144,43 @@ export async function uploadLogo(id: string, file: File) {
 
   return result
 }
+
+export const createClub = createServerFn({ method: 'POST' })
+  .validator(CreateClubSchema)
+  .handler(async ({ data }) => {
+    const {
+      club_id,
+      name,
+      country,
+      region,
+      location,
+      instagram,
+      tiktok,
+      foundation_date,
+      description,
+      status,
+      facebook,
+      sponsor_club,
+      x_twitter,
+    } = data
+
+    const pb = createServerPocketBase()
+
+    const result = await pb.collection(COLLECTION).create({
+      club_id,
+      name,
+      country,
+      region,
+      location,
+      instagram,
+      tiktok,
+      foundation_date,
+      description,
+      status,
+      facebook,
+      sponsor_club,
+      x_twitter,
+    })
+
+    return result
+  })

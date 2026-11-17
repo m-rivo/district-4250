@@ -28,17 +28,20 @@ export const CreateClubSchema = z.object({
   facebook: z.url().nullable(),
 })
 
-export const CreateClubFormSchema = CreateClubSchema.extend({
-  description: z.string(),
-  sponsor_club: z.string(),
-  location: z.string(),
-  instagram: z.string(),
-  tiktok: z.string(),
-  x_twitter: z.string(),
-  facebook: z.string(),
-})
-
 export const UpdateClubSchema = CreateClubSchema.extend({
   id: z.string().min(1, 'Member ID is required'),
 })
-export const UpdateClubFormSchema = CreateClubFormSchema
+
+const optionalUrl = z.union([z.url('Please enter a valid URL.'), z.literal('')])
+
+export const ClubFormSchema = CreateClubSchema.extend({
+  description: z.string(),
+  sponsor_club: z.string(),
+  location: optionalUrl,
+  instagram: optionalUrl,
+  tiktok: optionalUrl,
+  x_twitter: optionalUrl,
+  facebook: optionalUrl,
+})
+
+export type ClubFormValues = z.infer<typeof ClubFormSchema>

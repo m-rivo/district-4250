@@ -1,4 +1,4 @@
-import { PencilIcon, ChevronDownIcon } from 'lucide-react'
+import { PencilIcon, ChevronDownIcon, PlusIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { Button } from '#/components/ui/button'
 import {
@@ -25,66 +25,110 @@ import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import { Spinner } from '#/components/ui/spinner'
 import { useQueryClient } from '@tanstack/react-query'
-import type { ClubProfile } from '#/types/club'
-import { updateClub } from '#/functions/club.functions'
-import { UpdateClubFormSchema } from '#/lib/schemas/club.schemas'
-import type { UpdateClubSchema } from '#/lib/schemas/club.schemas'
+import type { ClubProfile, ClubStatus } from '#/types/club'
+import { updateClub, createClub } from '#/functions/club.functions'
+import { ClubFormSchema } from '#/lib/schemas/club.schemas'
+import type { ClubFormValues } from '#/lib/schemas/club.schemas'
 import { SelectClubStatus } from './SelectClubStatus'
 import { SelectOneCountry } from './SelectOneCountry'
 import { SelectRegion } from './SelectRegion'
+import type { Country } from '#/types/country'
+import { CountrySchema } from '#/lib/schemas/country.schemas'
+import { RegionSchema } from '#/lib/schemas/region.schemas'
+import type { Region } from '#/types/region'
 
-export default function ClubFormDialog({ data }: { data: ClubProfile }) {
+interface ClubFormDialogProps {
+  data?: ClubProfile | undefined
+  page?: number
+  perPage?: number
+  search?: string
+  countries?: Country[]
+}
+
+export default function ClubFormDialog({
+  data,
+  page,
+  perPage,
+  search,
+  countries,
+}: ClubFormDialogProps) {
   const [date, setDate] = useState<Date | undefined>(
-    data.foundation_date ? new Date(data.foundation_date) : undefined,
+    data?.foundation_date ? new Date(data.foundation_date) : undefined,
   )
   const [open, setOpen] = useState<boolean>(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
 
   const queryClient = useQueryClient()
 
+  const getInitialValues = (): ClubFormValues => ({
+    club_id: data?.club_id ?? '',
+    name: data?.name ?? '',
+    foundation_date: data?.foundation_date.slice(0, 10) ?? '',
+    country: data?.country ?? CountrySchema.options[0],
+    status: data?.status ?? 'active',
+    description: data?.description ?? '',
+    region: data?.region ?? RegionSchema.options[0],
+    sponsor_club: data?.sponsor_club ?? '',
+    location: data?.location ?? '',
+    instagram: data?.instagram ?? '',
+    tiktok: data?.tiktok ?? '',
+    x_twitter: data?.x_twitter ?? '',
+    facebook: data?.facebook ?? '',
+  })
+
   const form = useForm({
-    defaultValues: {
-      club_id: data.club_id,
-      name: data.name,
-      foundation_date: data.foundation_date.slice(0, 10),
-      country: data.country,
-      status: data.status,
-      description: data.description || '',
-      region: data.region || '',
-      sponsor_club: data.sponsor_club || '',
-      location: data.location || '',
-      instagram: data.instagram || '',
-      tiktok: data.tiktok || '',
-      x_twitter: data.x_twitter || '',
-      facebook: data.facebook || '',
-    } satisfies UpdateClubSchema,
+    defaultValues: getInitialValues(),
 
     validators: {
-      onSubmit: UpdateClubFormSchema,
+      onSubmit: ClubFormSchema,
     },
 
     onSubmit: async ({ value }) => {
-      const updateData = {
-        id: data.id,
+      const clubData = {
         ...value,
+        description: value.description || null,
+        sponsor_club: value.sponsor_club || null,
+        location: value.location || null,
+        instagram: value.instagram || null,
+        tiktok: value.tiktok || null,
+        x_twitter: value.x_twitter || null,
+        facebook: value.facebook || null,
       }
 
       try {
-        await updateClub({ data: updateData })
+        if (data?.id) {
+          await updateClub({
+            data: {
+              id: data.id,
+              ...clubData,
+            },
+          })
 
-        await queryClient.invalidateQueries({
-          queryKey: ['club', { id: data.id }],
-        })
+          await queryClient.invalidateQueries({
+            queryKey: ['club', { id: data.id }],
+          })
 
-        toast.success('Club updated successfully.')
+          toast.success('Club updated successfully.')
+        } else {
+          await createClub({ data: clubData })
+
+          await queryClient.invalidateQueries({
+            queryKey: ['clubs', { page, perPage, search, countries }],
+          })
+
+          toast.success('Club created successfully.')
+        }
 
         setOpen(false)
       } catch (error) {
-        console.error('Update failed:', error)
+        console.error('Club save failed:', error)
 
-        toast.error('Unable to update club.', {
-          description: 'Please check your information and try again.',
-        })
+        toast.error(
+          data?.id ? 'Unable to update club.' : 'Unable to create club.',
+          {
+            description: 'Please check your information and try again.',
+          },
+        )
       }
     },
   })
@@ -97,14 +141,20 @@ export default function ClubFormDialog({ data }: { data: ClubProfile }) {
 
         if (nextOpen) {
           form.reset()
-          setDate(new Date(data.foundation_date))
+          setDate(
+            data?.foundation_date ? new Date(data.foundation_date) : undefined,
+          )
         }
       }}
     >
       <DialogTrigger asChild>
-        <Button type="button" variant="outline">
-          <PencilIcon className="size-4" />
-          Edit club
+        <Button type="button" variant={data?.id ? 'outline' : 'default'}>
+          {data?.id ? (
+            <PencilIcon className="size-4" />
+          ) : (
+            <PlusIcon className="size-4" />
+          )}
+          {data?.id ? 'Edit club' : 'Create club'}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
@@ -117,9 +167,11 @@ export default function ClubFormDialog({ data }: { data: ClubProfile }) {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Edit club</DialogTitle>
+            <DialogTitle>{data?.id ? 'Edit club' : 'Create club'}</DialogTitle>
             <DialogDescription>
-              Make changes to the club here. Click save when you&apos;re done.
+              {data?.id
+                ? 'Make changes to the club here. Click save when you are done.'
+                : 'Complete the information to register a new club.'}
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-4">
@@ -196,7 +248,7 @@ export default function ClubFormDialog({ data }: { data: ClubProfile }) {
                       </FieldLabel>
 
                       <SelectClubStatus
-                        value={field.state.value}
+                        value={field.state.value as ClubStatus}
                         setValue={field.handleChange}
                         onBlur={field.handleBlur}
                       />
@@ -221,7 +273,7 @@ export default function ClubFormDialog({ data }: { data: ClubProfile }) {
                       </FieldLabel>
 
                       <SelectOneCountry
-                        value={field.state.value}
+                        value={field.state.value as Country}
                         setValue={field.handleChange}
                         onBlur={field.handleBlur}
                       />
@@ -241,7 +293,7 @@ export default function ClubFormDialog({ data }: { data: ClubProfile }) {
                     <Field>
                       <FieldLabel htmlFor={field.name}>Region</FieldLabel>
                       <SelectRegion
-                        value={field.state.value}
+                        value={field.state.value as Region}
                         setValue={field.handleChange}
                         onBlur={field.handleBlur}
                       />
@@ -445,7 +497,11 @@ export default function ClubFormDialog({ data }: { data: ClubProfile }) {
               {([isSubmitting, canSubmit]) => (
                 <Button type="submit" disabled={!canSubmit || isSubmitting}>
                   {isSubmitting && <Spinner data-icon="inline-start" />}
-                  {isSubmitting ? 'Saving...' : 'Save changes'}
+                  {isSubmitting
+                    ? 'Saving...'
+                    : data?.id
+                      ? 'Save changes'
+                      : 'Create club'}
                 </Button>
               )}
             </form.Subscribe>

@@ -6,11 +6,14 @@ import { getPaginatedClubsList } from '#/functions/club.functions'
 import { useDebounce } from '#/hooks/use-debounce'
 import { useState } from 'react'
 import { CardContent } from '#/components/ui/card'
-import { CircleXIcon } from 'lucide-react'
+import { CircleXIcon, FunnelXIcon } from 'lucide-react'
 import { DataTablePagination } from '#/components/ui/data-table/data-table-pagination'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { ComboboxMultiple } from '#/components/ComboboxMultiple'
+import ClubFormDialog from '#/components/clubs/ClubFormDialog'
+import type { Country } from '#/types/country'
+import type { SetStateAction } from 'react'
 
 export const Route = createFileRoute('/_app/clubs/')({
   component: ClubsPage,
@@ -20,7 +23,7 @@ function ClubsPage() {
   const [page, setPage] = useState<number>(1)
   const [perPage, setPerPage] = useState<number>(10)
   const [search, setSearch] = useState<string>('')
-  const [countries, setCountries] = useState<string[]>([])
+  const [countries, setCountries] = useState<Country[]>([])
 
   const debouncedSearch = useDebounce(search, 300)
 
@@ -75,7 +78,12 @@ function ClubsPage() {
   return (
     <section className="rounded-2xl p-6 sm:p-8">
       <h1 className="mb-3 text-4xl font-bold sm:text-5xl">Clubs</h1>
-
+      <ClubFormDialog
+        page={page}
+        perPage={perPage}
+        search={debouncedSearch}
+        countries={countries}
+      />
       <div>
         {/* FILTERS */}
         <div className="flex items-center py-4 gap-2 flex-wrap">
@@ -99,7 +107,7 @@ function ClubsPage() {
               ]}
               value={countries}
               setValue={(value) => {
-                setCountries(value)
+                setCountries(value as SetStateAction<Country[]>)
                 setPage(1)
               }}
               placeholder="Countries"
@@ -107,10 +115,11 @@ function ClubsPage() {
           </div>
           <div>
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={handleClearFilters}
               className="w-full"
             >
+              <FunnelXIcon />
               Clear all filters
             </Button>
           </div>
