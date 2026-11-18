@@ -27,7 +27,7 @@ export const getPaginatedClubsList = createServerFn({ method: 'GET' })
   .validator(ClubsListSchema)
   .handler(async ({ data }) => {
     const pb = createServerPocketBase()
-    const { page, perPage, search, countries } = data
+    const { page, perPage, search, countries, clubIds } = data
 
     const conditions: string[] = []
     const params: Record<string, string> = {}
@@ -52,6 +52,18 @@ export const getPaginatedClubsList = createServerFn({ method: 'GET' })
       })
 
       conditions.push(`(${countryConditions.join(' || ')})`)
+    }
+
+    // Club Ids
+    if (clubIds.length > 0) {
+      const clubConditions = clubIds.map((clubId, index) => {
+        const key = `club${index}`
+        params[key] = clubId
+
+        return `id = {:${key}}`
+      })
+
+      conditions.push(`(${clubConditions.join(' || ')})`)
     }
 
     const filter =

@@ -1,19 +1,14 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
 import type { ListResult } from 'pocketbase'
-import { paginationSchema } from '#/lib/schemas/pagination.schema'
-import type { ProjectListItem } from '#/types/project'
+import type { Project, ProjectListItem } from '#/types/project'
+import { ProjectsListSchema } from '#/lib/schemas/project.schemas'
 import z from 'zod'
 
-export const projectsListSchema = paginationSchema.extend({
-  search: z.string().default(''),
-  clubIds: z.array(z.string()).default([]),
-  startDateFrom: z.string().default(''),
-  startDateTo: z.string().default(''),
-})
+const COLLECTION = 'projects'
 
 export const getPaginatedProjectsList = createServerFn({ method: 'GET' })
-  .validator(projectsListSchema)
+  .validator(ProjectsListSchema)
   .handler(async ({ data }) => {
     const pb = createServerPocketBase()
     const { page, perPage, search, clubIds, startDateFrom, startDateTo } = data
@@ -57,7 +52,7 @@ export const getPaginatedProjectsList = createServerFn({ method: 'GET' })
       conditions.length > 0 ? pb.filter(conditions.join(' && '), params) : ''
 
     const resultList: ListResult<ProjectListItem> = await pb
-      .collection('projects')
+      .collection(COLLECTION)
       .getList(page, perPage, {
         fields: 'id,name,start_date,expand.clubs.id,expand.clubs.name',
         expand: 'clubs',
@@ -65,4 +60,20 @@ export const getPaginatedProjectsList = createServerFn({ method: 'GET' })
       })
 
     return resultList
+  })
+
+export const getOneProject = createServerFn({ method: 'GET' })
+  .validator(z.object({ id: z.string().min(1, 'Project ID is required.') }))
+  .handler(async ({ data }) => {
+    const { id } = data
+
+    const pb = createServerPocketBase()
+
+    const project: Project = await pb.collection(COLLECTION).getOne(id, {
+      fields:
+        'id,name,description,start_date,cost,expand.clubs.id,expand.clubs.name,expand.clubs.country,clubs',
+      expand: 'clubs',
+    })
+
+    return project
   })

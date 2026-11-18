@@ -1,12 +1,15 @@
-import type { Club } from './club'
+import type { Club, ClubListItem } from './club'
 
 export interface Project {
   id: string
   name: string
   description: string
-  clubs: Club[]
   start_date: string
   cost: number
+  clubs: string[]
+  expand?: {
+    clubs?: ClubListItem[]
+  }
 }
 
 export interface ProjectListItem {

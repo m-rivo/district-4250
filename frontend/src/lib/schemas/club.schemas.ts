@@ -8,6 +8,7 @@ export const CLUB_STATUSES = ['active', 'inactive']
 export const ClubStatusSchema = z.enum(CLUB_STATUSES)
 
 export const ClubsListSchema = paginationSchema.extend({
+  clubIds: z.array(z.string()).default([]),
   search: z.string().default(''),
   countries: z.array(z.string()).default([]),
 })
