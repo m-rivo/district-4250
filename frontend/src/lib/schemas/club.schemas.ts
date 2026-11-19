@@ -30,7 +30,7 @@ export const CreateClubSchema = z.object({
 })
 
 export const UpdateClubSchema = CreateClubSchema.extend({
-  id: z.string().min(1, 'Member ID is required'),
+  id: z.string().min(1, 'Club ID is required'),
 })
 
 const optionalUrl = z.union([z.url('Please enter a valid URL.'), z.literal('')])

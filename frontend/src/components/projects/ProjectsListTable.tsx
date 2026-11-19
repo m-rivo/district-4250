@@ -3,10 +3,8 @@ import { getPaginatedProjectsList } from '#/functions/project.functions'
 import { useDebounce } from '#/hooks/use-debounce'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import { useState } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 import type { DateRange } from 'react-day-picker'
-import { CardContent } from '../ui/card'
-import { CircleXIcon } from 'lucide-react'
 import { Input } from '../ui/input'
 import { ComboboxMultipleGroupedClubs } from '../ComboboxMultipleGroupedClubs'
 import { DatePickerWithRange } from '../DatePickerWithRange'
@@ -14,23 +12,35 @@ import { Button } from '../ui/button'
 import { DataTable } from '../ui/data-table/data-table'
 import { columns } from '../table-columns/project-columns'
 import { DataTablePagination } from '../ui/data-table/data-table-pagination'
+import ErrorCard from '../ErrorCard'
 
 interface ProjectsListTableProps {
   clubIds: string[]
   onClubIdsChange: (ids: string[]) => void
   canFilterClubs?: boolean
+  page: number
+  setPage: Dispatch<SetStateAction<number>>
+  perPage: number
+  setPerPage: Dispatch<SetStateAction<number>>
+  search: string
+  setSearch: Dispatch<SetStateAction<string>>
+  dateRange: DateRange | undefined
+  setDateRange: Dispatch<SetStateAction<DateRange | undefined>>
 }
 
 export default function ProjectsListTable({
   clubIds,
   onClubIdsChange,
   canFilterClubs = true,
+  page,
+  setPage,
+  perPage,
+  setPerPage,
+  search,
+  setSearch,
+  dateRange,
+  setDateRange,
 }: ProjectsListTableProps) {
-  const [page, setPage] = useState<number>(1)
-  const [perPage, setPerPage] = useState<number>(10)
-  const [search, setSearch] = useState<string>('')
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
-
   const startDateFrom = dateRange?.from
     ? format(dateRange.from, 'yyyy-MM-dd')
     : ''
@@ -91,22 +101,7 @@ export default function ProjectsListTable({
   })
 
   if (isError) {
-    return (
-      <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
-          <CircleXIcon className="size-9" />
-        </div>
-
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-tight">
-            Error loading projects
-          </h2>
-          <p role="alert" className="text-sm text-muted-foreground">
-            {error.message}
-          </p>
-        </div>
-      </CardContent>
-    )
+    return <ErrorCard title="Error loading projects" message={error.message} />
   }
 
   return (
@@ -115,7 +110,7 @@ export default function ProjectsListTable({
       <div className="flex items-center py-4 gap-2 flex-wrap">
         <div className="flex-1">
           <Input
-            placeholder="Search by name"
+            placeholder="Search by title"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)

@@ -7,8 +7,8 @@ import { format } from 'date-fns'
 const columnHelper = createColumnHelper<typeof features, ProjectListItem>()
 
 export const columns = [
-  columnHelper.accessor('name', {
-    header: 'Name',
+  columnHelper.accessor('title', {
+    header: 'Title',
     cell: ({ row }) => {
       const project = row.original
 
@@ -18,7 +18,7 @@ export const columns = [
           params={{ projectId: project.id }}
           className="text-primary underline-offset-4 hover:underline"
         >
-          {project.name}
+          {project.title}
         </Link>
       )
     },

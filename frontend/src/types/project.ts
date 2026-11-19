@@ -2,11 +2,12 @@ import type { Club, ClubListItem } from './club'
 
 export interface Project {
   id: string
-  name: string
+  title: string
   description: string
   start_date: string
   cost: number
   clubs: string[]
+  evidence: string
   expand?: {
     clubs?: ClubListItem[]
   }
@@ -14,7 +15,7 @@ export interface Project {
 
 export interface ProjectListItem {
   id: string
-  name: string
+  title: string
   start_date: string
 
   expand?: {

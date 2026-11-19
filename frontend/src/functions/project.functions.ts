@@ -2,7 +2,11 @@ import { createServerFn } from '@tanstack/react-start'
 import { createServerPocketBase } from '#/lib/pocketbase/server'
 import type { ListResult } from 'pocketbase'
 import type { Project, ProjectListItem } from '#/types/project'
-import { ProjectsListSchema } from '#/lib/schemas/project.schemas'
+import {
+  CreateProjectSchema,
+  ProjectsListSchema,
+  UpdateProjectSchema,
+} from '#/lib/schemas/project.schemas'
 import z from 'zod'
 
 const COLLECTION = 'projects'
@@ -16,13 +20,13 @@ export const getPaginatedProjectsList = createServerFn({ method: 'GET' })
     const conditions: string[] = []
     const params: Record<string, string> = {}
 
-    // Name
+    // Title
     const searchTerms = search.trim().split(/\s+/).filter(Boolean)
 
     searchTerms.forEach((term, index) => {
       const key = `search${index}`
 
-      conditions.push(`name ~ {:${key}}`)
+      conditions.push(`title ~ {:${key}}`)
       params[key] = term
     })
 
@@ -54,7 +58,7 @@ export const getPaginatedProjectsList = createServerFn({ method: 'GET' })
     const resultList: ListResult<ProjectListItem> = await pb
       .collection(COLLECTION)
       .getList(page, perPage, {
-        fields: 'id,name,start_date,expand.clubs.id,expand.clubs.name',
+        fields: 'id,title,start_date,expand.clubs.id,expand.clubs.name',
         expand: 'clubs',
         filter,
       })
@@ -71,9 +75,31 @@ export const getOneProject = createServerFn({ method: 'GET' })
 
     const project: Project = await pb.collection(COLLECTION).getOne(id, {
       fields:
-        'id,name,description,start_date,cost,expand.clubs.id,expand.clubs.name,expand.clubs.country,clubs',
+        'id,title,description,start_date,cost,evidence,expand.clubs.id,expand.clubs.name,expand.clubs.country,clubs',
       expand: 'clubs',
     })
 
     return project
+  })
+
+export const createProject = createServerFn({ method: 'POST' })
+  .validator(CreateProjectSchema)
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+
+    const result = await pb.collection(COLLECTION).create(data)
+
+    return result
+  })
+
+export const updateProject = createServerFn({ method: 'POST' })
+  .validator(UpdateProjectSchema)
+  .handler(async ({ data }) => {
+    const { id, ...updateData } = data
+
+    const pb = createServerPocketBase()
+
+    const result = await pb.collection(COLLECTION).update(id, updateData)
+
+    return result
   })

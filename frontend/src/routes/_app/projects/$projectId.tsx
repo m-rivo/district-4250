@@ -9,10 +9,14 @@ import type { Country } from '#/types/country'
 import { format, parseISO } from 'date-fns'
 import { Breadcrumbs } from '#/components/Bradcrumbs'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
-import { CogIcon, HandshakeIcon, NotebookTextIcon } from 'lucide-react'
-import parse from 'html-react-parser'
-import DOMPurify from 'dompurify'
+import {
+  CogIcon,
+  HandshakeIcon,
+  ReceiptTextIcon,
+  TextInitialIcon,
+} from 'lucide-react'
 import { Skeleton } from '#/components/ui/skeleton'
+import ProjectFormDialog from '#/components/projects/ProjectFormDialog'
 
 export const Route = createFileRoute('/_app/projects/$projectId')({
   component: RouteComponent,
@@ -38,8 +42,6 @@ function RouteComponent() {
     queryFn: () => getOneProject({ data: { id: projectId } }),
   })
 
-  const cleanBiography = DOMPurify.sanitize(project?.description || '')
-
   if (isError)
     return <ErrorCard title="Error loading project" message={error.message} />
 
@@ -54,7 +56,7 @@ function RouteComponent() {
         <>
           <Breadcrumbs
             routes={[{ route: '/projects', name: 'Projects' }]}
-            page={project.name}
+            page={project.title}
           />
           {/* Header */}
           <div className="flex flex-col gap-5 rounded-xl border bg-card p-6 sm:flex-row sm:items-center">
@@ -65,7 +67,7 @@ function RouteComponent() {
                 gap-2"
                 >
                   <HandshakeIcon className="size-8 text-primary" />
-                  {project.name}
+                  {project.title}
                 </h1>
               </div>
               <p className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -81,45 +83,41 @@ function RouteComponent() {
               </p>
             </div>
 
-            {/* <EditMemberDialog data={data} />
-        <ImageUpdateDialog
-          title="profile picture"
-          onSave={async (file) => {
-            await uploadProfilePicture(memberId, file)
-
-            await queryClient.invalidateQueries({
-              queryKey: ['member', { id: memberId }],
-            })
-
-            toast.success('Profile picture updated successfully.')
-          }}
-        /> */}
+            <ProjectFormDialog data={project} />
           </div>
 
           {/* Description */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <NotebookTextIcon className="size-5 text-primary" />
+                <TextInitialIcon className="size-5 text-primary" />
                 Description
               </CardTitle>
             </CardHeader>
 
             <CardContent>
-              {project.description ? (
-                <div className="prose prose-sm max-w-none dark:prose-invert">
-                  {parse(cleanBiography)}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  No description available.
-                </p>
-              )}
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                {project.description}
+              </div>
             </CardContent>
           </Card>
 
-          <h2 className="flex items-center gap-2">
-            <CogIcon className="size-5 text-primary" /> Clubs participantes
+          {/* Evidence */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ReceiptTextIcon className="size-5 text-primary" />
+                Evidence
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <a>{project.evidence}</a>
+            </CardContent>
+          </Card>
+
+          <h2 className="flex items-center gap-2 font-bold">
+            <CogIcon className="size-5 text-primary" /> Clubs
           </h2>
           <ClubsListTable
             page={page}
