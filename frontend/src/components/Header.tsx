@@ -49,7 +49,7 @@ export default function Header() {
             Projects
           </Link>
           <Link
-            to="/profile"
+            to="/my-profile"
             className="nav-link"
             activeProps={{ className: 'nav-link is-active' }}
           >

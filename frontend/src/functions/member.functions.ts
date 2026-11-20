@@ -7,6 +7,7 @@ import {
   UpdateMemberSchema,
   MembersListSchema,
 } from '#/lib/schemas/member.schemas'
+import { getRequestHeader } from '@tanstack/react-start/server'
 
 const COLLECTION = 'members'
 
@@ -145,3 +146,44 @@ export async function uploadProfilePicture(id: string, file: File) {
 
   return result
 }
+
+export const getMyProfile = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const cookie = getRequestHeader('cookie')
+
+    if (!cookie?.includes('pb_auth=')) {
+      throw new Error('Unauthorized')
+    }
+
+    const pb = createServerPocketBase()
+    pb.authStore.loadFromCookie(cookie)
+
+    if (!pb.authStore.isValid) {
+      throw new Error('Unauthorized')
+    }
+
+    try {
+      const authData = await pb.collection('users').authRefresh()
+
+      const member: MemberProfile = await pb
+        .collection('members')
+        .getFirstListItem(
+          pb.filter('user = {:userId}', {
+            userId: authData.record.id,
+          }),
+          {
+            expand: 'club,roles',
+          },
+        )
+
+      return {
+        ...member,
+        profile_picture: member.profile_picture
+          ? `${pb.baseURL}/api/files/members/${member.id}/${encodeURIComponent(member.profile_picture)}`
+          : null,
+      }
+    } catch {
+      throw new Error('Unable to retrieve your profile.')
+    }
+  },
+)

@@ -19,10 +19,10 @@ import { Skeleton } from '#/components/ui/skeleton'
 import ProjectFormDialog from '#/components/projects/ProjectFormDialog'
 
 export const Route = createFileRoute('/_app/projects/$projectId')({
-  component: RouteComponent,
+  component: ProjectPage,
 })
 
-function RouteComponent() {
+function ProjectPage() {
   const { projectId } = Route.useParams()
 
   const [page, setPage] = useState<number>(1)
@@ -43,7 +43,12 @@ function RouteComponent() {
   })
 
   if (isError)
-    return <ErrorCard title="Error loading project" message={error.message} />
+    return (
+      <ErrorCard
+        title={`Error loading project with ID: ${projectId}`}
+        message={error.message}
+      />
+    )
 
   return (
     <section className="space-y-6 p-6">

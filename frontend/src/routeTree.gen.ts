@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppMyProfileRouteImport } from './routes/_app/my-profile'
 import { Route as AuthConfirmPasswordResetRouteImport } from './routes/_auth/confirm-password-reset'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
@@ -42,9 +42,9 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const AppMyProfileRoute = AppMyProfileRouteImport.update({
+  id: '/my-profile',
+  path: '/my-profile',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AuthConfirmPasswordResetRoute =
@@ -127,7 +127,7 @@ const AppProjectsProjectIdRoute = AppProjectsProjectIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/profile': typeof AppProfileRoute
+  '/my-profile': typeof AppMyProfileRoute
   '/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -146,7 +146,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
-  '/profile': typeof AppProfileRoute
+  '/my-profile': typeof AppMyProfileRoute
   '/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -167,7 +167,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
-  '/_app/profile': typeof AppProfileRoute
+  '/_app/my-profile': typeof AppMyProfileRoute
   '/_auth/confirm-password-reset': typeof AuthConfirmPasswordResetRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
@@ -189,7 +189,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/profile'
+    | '/my-profile'
     | '/confirm-password-reset'
     | '/forgot-password'
     | '/login'
@@ -208,7 +208,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/profile'
+    | '/my-profile'
     | '/confirm-password-reset'
     | '/forgot-password'
     | '/login'
@@ -228,7 +228,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_app'
     | '/_auth'
-    | '/_app/profile'
+    | '/_app/my-profile'
     | '/_auth/confirm-password-reset'
     | '/_auth/forgot-password'
     | '/_auth/login'
@@ -277,11 +277,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/profile': {
-      id: '/_app/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
+    '/_app/my-profile': {
+      id: '/_app/my-profile'
+      path: '/my-profile'
+      fullPath: '/my-profile'
+      preLoaderRoute: typeof AppMyProfileRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_auth/confirm-password-reset': {
@@ -393,7 +393,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteRouteChildren {
-  AppProfileRoute: typeof AppProfileRoute
+  AppMyProfileRoute: typeof AppMyProfileRoute
   AppIndexRoute: typeof AppIndexRoute
   AppClubsClubIdRoute: typeof AppClubsClubIdRoute
   AppClubsLogoRoute: typeof AppClubsLogoRoute
@@ -406,7 +406,7 @@ interface AppRouteRouteChildren {
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppProfileRoute: AppProfileRoute,
+  AppMyProfileRoute: AppMyProfileRoute,
   AppIndexRoute: AppIndexRoute,
   AppClubsClubIdRoute: AppClubsClubIdRoute,
   AppClubsLogoRoute: AppClubsLogoRoute,
