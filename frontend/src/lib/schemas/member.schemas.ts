@@ -24,9 +24,13 @@ export const UpdateMemberSchema = UpdateMemberFormSchema.extend({
 
 export const MembershipStatusSchema = z.enum(MEMBERSHIP_STATUSES)
 
-export const MembersListSchema = paginationSchema.extend({
+export const MembersFiltersSchema = z.object({
   search: z.string().default(''),
   clubIds: z.array(z.string()).default([]),
   roleIds: z.array(z.string()).default([]),
   membership_status: MembershipStatusSchema.nullable().default(null),
 })
+
+export const MembersListSchema = paginationSchema.extend(
+  MembersFiltersSchema.shape,
+)

@@ -1,12 +1,14 @@
 import { getFullClubsList } from '#/functions/club.functions'
-import { getMembersList } from '#/functions/member.functions'
+import {
+  getMembersForExport,
+  getPaginatedMembersList,
+} from '#/functions/member.functions'
 import { getRoleList } from '#/functions/role.functions'
 import { useDebounce } from '#/hooks/use-debounce'
 import type { MembershipStatus } from '#/types/member'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { CardContent } from '../ui/card'
-import { CircleXIcon, FunnelXIcon } from 'lucide-react'
+import { FunnelXIcon, FileSpreadsheet } from 'lucide-react'
 import { DataTablePagination } from '../ui/data-table/data-table-pagination'
 import { DataTable } from '../ui/data-table/data-table'
 import { columns } from '../table-columns/member-columns'
@@ -15,6 +17,9 @@ import { SelectMembershipStatus } from './SelectMembershipStatus'
 import { ComboboxMultiple } from '../ComboboxMultiple'
 import { ComboboxMultipleGroupedClubs } from '../ComboboxMultipleGroupedClubs'
 import { Input } from '../ui/input'
+import ErrorCard from '../ErrorCard'
+import { exportToExcel } from '#/lib/exports/excel'
+import { toast } from 'sonner'
 
 interface MembersListTableProps {
   clubIds: string[]
@@ -70,7 +75,7 @@ export default function MembersListTable({
       },
     ],
     queryFn: () =>
-      getMembersList({
+      getPaginatedMembersList({
         data: {
           page,
           perPage,
@@ -92,23 +97,38 @@ export default function MembersListTable({
     queryFn: () => getRoleList(),
   })
 
-  if (isError) {
-    return (
-      <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
-          <CircleXIcon className="size-9" />
-        </div>
+  const handleExport = async () => {
+    const members = await getMembersForExport({
+      data: {
+        search,
+        clubIds,
+        roleIds,
+        membership_status: status,
+      },
+    })
 
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-tight">
-            Error loading members
-          </h2>
-          <p role="alert" className="text-sm text-muted-foreground">
-            {error.message}
-          </p>
-        </div>
-      </CardContent>
-    )
+    if (!members.length) {
+      toast.info('No members found to export.')
+      return
+    }
+
+    exportToExcel({
+      data: members,
+      fileName: 'members-district-4250',
+      sheetName: 'Members',
+      title: 'Member Directory - District 4250',
+      columns: [
+        { header: 'First Name', key: 'first_name', width: 25 },
+        { header: 'Last Name', key: 'last_name', width: 25 },
+        { header: 'Club', key: 'club', width: 25 },
+        { header: 'Roles', key: 'roles', width: 30 },
+        { header: 'Membership Status', key: 'membership_status', width: 22 },
+      ],
+    })
+  }
+
+  if (isError) {
+    return <ErrorCard title="Error loading members" message={error.message} />
   }
 
   return (
@@ -161,6 +181,12 @@ export default function MembersListTable({
             className="w-full"
           >
             <FunnelXIcon /> Clear filters
+          </Button>
+        </div>
+        <div>
+          <Button variant="default" onClick={handleExport}>
+            <FileSpreadsheet className="size-4" />
+            Exportar Excel
           </Button>
         </div>
       </div>

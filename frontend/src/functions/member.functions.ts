@@ -6,70 +6,92 @@ import { z } from 'zod'
 import {
   UpdateMemberSchema,
   MembersListSchema,
+  MembersFiltersSchema,
 } from '#/lib/schemas/member.schemas'
 import { getRequestHeader } from '@tanstack/react-start/server'
+import type { Role } from '#/types/role'
 
 const COLLECTION = 'members'
 
-export const getMembersList = createServerFn({ method: 'GET' })
+function buildMembersFilter({
+  pb,
+  search,
+  clubIds,
+  roleIds,
+  membership_status,
+}: {
+  pb: ReturnType<typeof createServerPocketBase>
+  search: string
+  clubIds: string[]
+  roleIds: string[]
+  membership_status: string | null
+}) {
+  const conditions: string[] = []
+  const params: Record<string, string> = {}
+
+  // Names
+  const searchTerms = search.trim().split(/\s+/).filter(Boolean)
+
+  searchTerms.forEach((term, index) => {
+    const key = `search${index}`
+
+    conditions.push(`(first_name ~ {:${key}} || last_name ~ {:${key}})`)
+
+    params[key] = term
+  })
+
+  // Clubs
+  if (clubIds.length > 0) {
+    const clubConditions = clubIds.map((id, index) => {
+      const key = `club${index}`
+      params[key] = id
+      return `club = {:${key}}`
+    })
+
+    conditions.push(`(${clubConditions.join(' || ')})`)
+  }
+
+  // Roles
+  if (roleIds.length > 0) {
+    const roleConditions = roleIds.map((id, index) => {
+      const key = `role${index}`
+      params[key] = id
+      return `roles ~ {:${key}}`
+    })
+
+    conditions.push(`(${roleConditions.join(' || ')})`)
+  }
+
+  // Membership status
+  if (membership_status !== null) {
+    conditions.push(`membership_status = '${membership_status}'`)
+  }
+
+  return conditions.length > 0 ? pb.filter(conditions.join(' && '), params) : ''
+}
+
+export const getPaginatedMembersList = createServerFn({ method: 'GET' })
   .validator(MembersListSchema)
   .handler(async ({ data }) => {
     const { page, perPage, search, clubIds, roleIds, membership_status } = data
 
     const pb = createServerPocketBase()
 
-    const conditions: string[] = []
-    const params: Record<string, string> = {}
-
-    // Names
-    const searchTerms = search.trim().split(/\s+/).filter(Boolean)
-
-    searchTerms.forEach((term, index) => {
-      const key = `search${index}`
-
-      conditions.push(`(first_name ~ {:${key}} || last_name ~ {:${key}})`)
-
-      params[key] = term
+    const filter = buildMembersFilter({
+      pb,
+      search,
+      clubIds,
+      roleIds,
+      membership_status,
     })
-
-    // Clubs
-    if (clubIds.length > 0) {
-      const clubConditions = clubIds.map((id, index) => {
-        const key = `club${index}`
-        params[key] = id
-        return `club = {:${key}}`
-      })
-
-      conditions.push(`(${clubConditions.join(' || ')})`)
-    }
-
-    // Roles
-    if (roleIds.length > 0) {
-      const roleConditions = roleIds.map((id, index) => {
-        const key = `role${index}`
-        params[key] = id
-        return `roles ~ {:${key}}`
-      })
-
-      conditions.push(`(${roleConditions.join(' || ')})`)
-    }
-
-    // Membership status
-    if (membership_status !== null) {
-      conditions.push(`membership_status = '${membership_status}'`)
-    }
-
-    const filterExpression = conditions.join(' && ')
 
     const resultList: ListResult<MemberListItem> = await pb
       .collection(COLLECTION)
       .getList(page, perPage, {
+        filter,
+        expand: 'club,roles',
         fields:
           'id,first_name,last_name,membership_status,profile_picture,roles,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name',
-        expand: 'club,roles',
-        ...(filterExpression
-          ? { filter: pb.filter(filterExpression, params) }
-          : {}),
       })
 
     return {
@@ -81,6 +103,38 @@ export const getMembersList = createServerFn({ method: 'GET' })
           : null,
       })),
     }
+  })
+
+export const getMembersForExport = createServerFn({
+  method: 'GET',
+})
+  .validator(MembersFiltersSchema)
+  .handler(async ({ data }) => {
+    const pb = createServerPocketBase()
+
+    const filter = buildMembersFilter({
+      pb,
+      ...data,
+    })
+
+    const members: MemberListItem[] = await pb
+      .collection('members')
+      .getFullList({
+        filter,
+        expand: 'club,roles',
+        fields:
+          'id,first_name,last_name,membership_status,expand.club.name,expand.roles.name',
+        sort: 'first_name,last_name',
+      })
+
+    return members.map((member) => ({
+      first_name: member.first_name,
+      last_name: member.last_name,
+      club: member.expand?.club?.name ?? 'Sin club',
+      roles:
+        member.expand?.roles?.map((role: Role) => role.name).join(', ') ?? '',
+      membership_status: member.membership_status,
+    }))
   })
 
 export const getOneMember = createServerFn({ method: 'GET' })
