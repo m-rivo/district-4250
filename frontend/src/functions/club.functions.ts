@@ -68,7 +68,7 @@ export const getFullClubsList = createServerFn({ method: 'GET' }).handler(
     const pb = createServerPocketBase()
 
     const clubList: ClubListItem[] = await pb
-      .collection('clubs')
+      .collection(COLLECTION)
       .getFullList({ fields: 'id,name,country' })
 
     return clubList
@@ -102,7 +102,7 @@ export const getClubsForExport = createServerFn({
       ...data,
     })
 
-    const clubs: ClubForExport[] = await pb.collection('clubs').getFullList({
+    const clubs: ClubForExport[] = await pb.collection(COLLECTION).getFullList({
       filter,
       fields: 'club_id,name,country',
       sort: 'country',

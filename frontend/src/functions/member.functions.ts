@@ -118,7 +118,7 @@ export const getMembersForExport = createServerFn({
     })
 
     const members: MemberListItem[] = await pb
-      .collection('members')
+      .collection(COLLECTION)
       .getFullList({
         filter,
         expand: 'club,roles',
@@ -220,7 +220,7 @@ export const getMyProfile = createServerFn({ method: 'GET' }).handler(
       const authData = await pb.collection('users').authRefresh()
 
       const member: MemberProfile = await pb
-        .collection('members')
+        .collection(COLLECTION)
         .getFirstListItem(
           pb.filter('user = {:userId}', {
             userId: authData.record.id,

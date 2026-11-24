@@ -1,12 +1,16 @@
 import { paginationSchema } from '#/lib/schemas/pagination.schema'
 import z from 'zod'
 
-export const ProjectsListSchema = paginationSchema.extend({
+export const ProjectsFiltersSchema = z.object({
   search: z.string().default(''),
   clubIds: z.array(z.string()).default([]),
   startDateFrom: z.string().default(''),
   startDateTo: z.string().default(''),
 })
+
+export const ProjectsListSchema = paginationSchema.extend(
+  ProjectsFiltersSchema.shape,
+)
 
 export const CreateProjectSchema = z.object({
   title: z.string().min(1, 'Title is required.'),

@@ -1,5 +1,8 @@
 import { getFullClubsList } from '#/functions/club.functions'
-import { getPaginatedProjectsList } from '#/functions/project.functions'
+import {
+  getPaginatedProjectsList,
+  getProjectsForExport,
+} from '#/functions/project.functions'
 import { useDebounce } from '#/hooks/use-debounce'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
@@ -13,6 +16,9 @@ import { DataTable } from '../ui/data-table/data-table'
 import { columns } from '../table-columns/project-columns'
 import { DataTablePagination } from '../ui/data-table/data-table-pagination'
 import ErrorCard from '../ErrorCard'
+import { FileSpreadsheetIcon, FunnelXIcon } from 'lucide-react'
+import { exportToExcel } from '#/lib/exports/excel'
+import { toast } from 'sonner'
 
 interface ProjectsListTableProps {
   clubIds: string[]
@@ -100,6 +106,34 @@ export default function ProjectsListTable({
     queryFn: () => getFullClubsList(),
   })
 
+  const handleExport = async () => {
+    const projects = await getProjectsForExport({
+      data: {
+        search,
+        clubIds,
+        startDateFrom,
+        startDateTo,
+      },
+    })
+
+    if (!projects.length) {
+      toast.info('No projects found to export.')
+      return
+    }
+
+    exportToExcel({
+      data: projects,
+      fileName: 'projects-district-4250',
+      sheetName: 'Projects',
+      title: 'Project Directory - District 4250',
+      columns: [
+        { header: 'Title', key: 'title', width: 25 },
+        { header: 'Start Date', key: 'start_date', width: 25 },
+        { header: 'Clubs', key: 'clubs', width: 25 },
+      ],
+    })
+  }
+
   if (isError) {
     return <ErrorCard title="Error loading projects" message={error.message} />
   }
@@ -140,11 +174,17 @@ export default function ProjectsListTable({
         </div>
         <div>
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={handleClearFilters}
             className="w-full"
           >
-            Clear all filters
+            <FunnelXIcon /> Clear filters
+          </Button>
+        </div>
+        <div>
+          <Button variant="success" onClick={handleExport}>
+            <FileSpreadsheetIcon className="size-4" />
+            Export Excel
           </Button>
         </div>
       </div>
