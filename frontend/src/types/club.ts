@@ -14,6 +14,12 @@ export interface ClubListItem {
   country: Country
 }
 
+export interface ClubForExport {
+  club_id: string
+  name: string
+  country: Country
+}
+
 export interface ClubProfile {
   id: string
   club_id: string

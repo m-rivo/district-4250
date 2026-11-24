@@ -7,11 +7,13 @@ export const CLUB_STATUSES = ['active', 'inactive']
 
 export const ClubStatusSchema = z.enum(CLUB_STATUSES)
 
-export const ClubsListSchema = paginationSchema.extend({
+export const ClubsFiltersSchema = z.object({
   clubIds: z.array(z.string()).default([]),
   search: z.string().default(''),
   countries: z.array(z.string()).default([]),
 })
+
+export const ClubsListSchema = paginationSchema.extend(ClubsFiltersSchema.shape)
 
 export const CreateClubSchema = z.object({
   club_id: z.string().min(1, 'Rotary ID is required.'),

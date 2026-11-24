@@ -8,7 +8,7 @@ import { useDebounce } from '#/hooks/use-debounce'
 import type { MembershipStatus } from '#/types/member'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { FunnelXIcon, FileSpreadsheet } from 'lucide-react'
+import { FunnelXIcon, FileSpreadsheetIcon } from 'lucide-react'
 import { DataTablePagination } from '../ui/data-table/data-table-pagination'
 import { DataTable } from '../ui/data-table/data-table'
 import { columns } from '../table-columns/member-columns'
@@ -184,9 +184,9 @@ export default function MembersListTable({
           </Button>
         </div>
         <div>
-          <Button variant="default" onClick={handleExport}>
-            <FileSpreadsheet className="size-4" />
-            Exportar Excel
+          <Button variant="success" onClick={handleExport}>
+            <FileSpreadsheetIcon className="size-4" />
+            Export Excel
           </Button>
         </div>
       </div>

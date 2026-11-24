@@ -4,13 +4,17 @@ import { Input } from '#/components/ui/input'
 import { ComboboxMultiple } from '#/components/ComboboxMultiple'
 import { DataTable } from '#/components/ui/data-table/data-table'
 import { columns } from '#/components/table-columns/club-columns.tsx'
-import { FunnelXIcon } from 'lucide-react'
+import { FileSpreadsheetIcon, FunnelXIcon } from 'lucide-react'
 import type { SetStateAction, Dispatch } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getPaginatedClubsList } from '#/functions/club.functions'
-
+import {
+  getClubsForExport,
+  getPaginatedClubsList,
+} from '#/functions/club.functions'
 import type { Country } from '#/types/country'
 import ErrorCard from '../ErrorCard'
+import { exportToExcel } from '#/lib/exports/excel'
+import { toast } from 'sonner'
 
 interface ClubsListTableProps {
   page: number
@@ -65,6 +69,33 @@ export default function ClubsListTable({
       }),
   })
 
+  const handleExport = async () => {
+    const clubs = await getClubsForExport({
+      data: {
+        search,
+        clubIds,
+        countries,
+      },
+    })
+
+    if (!clubs.length) {
+      toast.info('No clubs found to export.')
+      return
+    }
+
+    exportToExcel({
+      data: clubs,
+      fileName: 'clubs-district-4250',
+      sheetName: 'Clubs',
+      title: 'Club Directory - District 4250',
+      columns: [
+        { header: 'Rotary ID', key: 'club_id', width: 25 },
+        { header: 'Name', key: 'name', width: 25 },
+        { header: 'Country', key: 'country', width: 25 },
+      ],
+    })
+  }
+
   if (isError) {
     return <ErrorCard title="Error loading clubs" message={error.message} />
   }
@@ -109,6 +140,12 @@ export default function ClubsListTable({
           >
             <FunnelXIcon />
             Clear all filters
+          </Button>
+        </div>
+        <div>
+          <Button variant="success" onClick={handleExport}>
+            <FileSpreadsheetIcon className="size-4" />
+            Export Excel
           </Button>
         </div>
       </div>
