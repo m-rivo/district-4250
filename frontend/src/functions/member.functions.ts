@@ -7,9 +7,11 @@ import {
   UpdateMemberSchema,
   MembersListSchema,
   MembersFiltersSchema,
+  AddMemberToClubSchema,
 } from '#/lib/schemas/member.schemas'
 import { getRequestHeader } from '@tanstack/react-start/server'
 import type { Role } from '#/types/role'
+import { getMyPermissions } from './role.functions'
 
 const COLLECTION = 'members'
 
@@ -150,7 +152,7 @@ export const getOneMember = createServerFn({ method: 'GET' })
 
     const member: MemberProfile = await pb.collection(COLLECTION).getOne(id, {
       fields:
-        'id,first_name,last_name,profile_picture,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name,birth_date,member_since,membership_status,profession,biography',
+        'id,first_name,last_name,profile_picture,club,expand.club.id,expand.club.name,expand.roles.id,expand.roles.name,birth_date,member_since,membership_status,profession,biography',
       expand: 'club,roles',
     })
 
@@ -241,3 +243,55 @@ export const getMyProfile = createServerFn({ method: 'GET' }).handler(
     }
   },
 )
+
+export const addMemberToClub = createServerFn({ method: 'POST' })
+  .validator(AddMemberToClubSchema)
+  .handler(async ({ data }) => {
+    const [myProfile, permissions] = await Promise.all([
+      getMyProfile(),
+      getMyPermissions(),
+    ])
+
+    const pb = createServerPocketBase()
+
+    const { memberId, roles, membership_status } = data
+
+    // Validar que el usuario autenticado pertenezca a un club
+    if (!myProfile.club) {
+      throw new Error('You do not belong to a club.')
+    }
+
+    // Verificar permiso
+    if (!permissions.includes('club.members.add')) {
+      throw new Error('You do not have permission to add members.')
+    }
+
+    // Validar que el member no pertenezca ya a un club
+    const targetMember = await pb.collection(COLLECTION).getOne(memberId)
+
+    if (targetMember.club) {
+      throw new Error('This member already belongs to a club.')
+    }
+
+    // Validar que los roles solicitados sean roles de categoría club
+    const requestedRoles = await Promise.all(
+      roles.map((roleId) => pb.collection('roles').getOne(roleId)),
+    )
+
+    const allowedCategories = ['club_board', 'club_director']
+
+    const hasInvalidRoles = requestedRoles.some(
+      (role) => !allowedCategories.includes(role.category),
+    )
+
+    if (hasInvalidRoles) {
+      throw new Error('You cannot assign these roles.')
+    }
+
+    // Agregar miembro a club
+    return pb.collection(COLLECTION).update(memberId, {
+      club: myProfile.club,
+      roles,
+      membership_status,
+    })
+  })

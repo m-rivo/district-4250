@@ -39,6 +39,7 @@ export interface MemberListItem extends Pick<
 export interface MemberProfile extends Pick<
   Member,
   | 'id'
+  | 'club'
   | 'first_name'
   | 'last_name'
   | 'membership_status'

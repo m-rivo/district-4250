@@ -23,6 +23,8 @@ import EditMemberDialog from '#/components/members/EditMemberDialog'
 import { ImageUpdateDialog } from '#/components/ImageUpdateDialog'
 import { toast } from 'sonner'
 import ErrorCard from '#/components/ErrorCard'
+import { AddMemberToClubDialog } from './AddMemberToClubDialog'
+import { getMyPermissions } from '#/functions/role.functions'
 
 interface MemberProfileProps {
   memberId?: string
@@ -46,6 +48,17 @@ export default function MemberProfile({ memberId }: MemberProfileProps) {
 
   const fullName = `${member?.first_name} ${member?.last_name}`
   const cleanBiography = DOMPurify.sanitize(member?.biography ?? '')
+
+  const { data: permissions = [] } = useQuery({
+    queryKey: ['my-permissions'],
+    queryFn: () => getMyPermissions(),
+  })
+
+  const canAddMembers = permissions.includes('club.members.add')
+  const canRemoveMembers = permissions.includes('club.members.remove')
+  const canUpdateMembersRoles = permissions.includes(
+    'club.members.roles.update',
+  )
 
   if (isError) {
     return (
@@ -94,8 +107,14 @@ export default function MemberProfile({ memberId }: MemberProfileProps) {
               </div>
 
               <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                <CogIcon className="size-4 text-yellow-500" />
-                {member.expand?.club?.name ?? 'No club assigned'}
+                {member.club ? (
+                  <>
+                    <CogIcon className="size-4 text-yellow-500" />
+                    {member.expand?.club?.name}
+                  </>
+                ) : (
+                  'No club assigned'
+                )}
               </p>
 
               <div className="flex flex-wrap gap-2">
@@ -123,6 +142,9 @@ export default function MemberProfile({ memberId }: MemberProfileProps) {
                   }}
                 />
               </>
+            )}
+            {!member.club && canAddMembers && (
+              <AddMemberToClubDialog member={member} />
             )}
           </div>
 
